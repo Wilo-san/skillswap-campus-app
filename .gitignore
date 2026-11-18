@@ -1,7 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# Node / frontend
 node_modules/
 dist/
+
+# Base de données et secrets
 *.db
 *.db-shm
 *.db-wal
 .env
+.env.local
+
 .DS_Store

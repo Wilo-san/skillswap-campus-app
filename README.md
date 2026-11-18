@@ -10,11 +10,11 @@ Le projet contient **deux applications séparées** :
 
 | Dossier | Rôle | Technologie | Adresse en local |
 |---|---|---|---|
-| `backend/` | API REST + base de données | Node.js, Express, SQLite | http://localhost:4000 |
+| `backend/` | API REST + base de données | Python, FastAPI, SQLAlchemy, Alembic | http://localhost:4000 |
 | `frontend/` | Interface utilisateur | React 18, Vite, React Router | http://localhost:5173 |
 
-Le frontend ne parle au backend que par HTTP (`/api/...`). Vous pouvez donc remplacer le backend
-fourni par le vôtre : voir la section [Brancher votre propre backend](#brancher-votre-propre-backend).
+Le frontend ne parle au backend que par HTTP (`/api/...`). Les deux tournent séparément :
+le backend doit être démarré **avant** d'ouvrir l'interface.
 
 ---
 
@@ -22,19 +22,20 @@ fourni par le vôtre : voir la section [Brancher votre propre backend](#brancher
 
 1. [Ce que fait l'application](#ce-que-fait-lapplication)
 2. [Prérequis](#prérequis)
-3. [Lancer l'application (pas à pas)](#lancer-lapplication-pas-à-pas)
-4. [Comptes de test](#comptes-de-test)
-5. [Vérifier que tout fonctionne](#vérifier-que-tout-fonctionne)
-6. [Scénario de test complet](#scénario-de-test-complet)
-7. [Variables d'environnement](#variables-denvironnement)
-8. [Commandes npm](#commandes-npm)
-9. [Réinitialiser la base de données](#réinitialiser-la-base-de-données)
-10. [Tests automatisés](#tests-automatisés)
-11. [Structure du projet](#structure-du-projet)
-12. [Où sont appliquées les règles de gestion](#où-sont-appliquées-les-règles-de-gestion)
-13. [API REST](#api-rest)
-14. [Brancher votre propre backend](#brancher-votre-propre-backend)
-15. [Dépannage](#dépannage)
+3. [Lancer le backend Python](#lancer-le-backend-python)
+4. [Lancer le frontend](#lancer-le-frontend)
+5. [Comptes de test](#comptes-de-test)
+6. [Vérifier que tout fonctionne](#vérifier-que-tout-fonctionne)
+7. [Scénario de test complet](#scénario-de-test-complet)
+8. [Base de données et migrations Alembic](#base-de-données-et-migrations-alembic)
+9. [Variables d'environnement](#variables-denvironnement)
+10. [Commandes utiles](#commandes-utiles)
+11. [Tests automatisés](#tests-automatisés)
+12. [Structure du projet](#structure-du-projet)
+13. [Où sont appliquées les règles de gestion](#où-sont-appliquées-les-règles-de-gestion)
+14. [API REST](#api-rest)
+15. [Brancher le frontend sur une autre API](#brancher-le-frontend-sur-une-autre-api)
+16. [Dépannage](#dépannage)
 
 ---
 
@@ -68,52 +69,97 @@ fourni par le vôtre : voir la section [Brancher votre propre backend](#brancher
 
 | Outil | Version | Vérifier avec |
 |---|---|---|
-| **Node.js** | 18 ou plus (20 LTS recommandé) | `node -v` |
+| **Python** | 3.10 ou plus (3.11 recommandé) | `python --version` |
+| **Node.js** | 18 ou plus | `node -v` |
 | **npm** | fourni avec Node.js | `npm -v` |
 
-Aucune base de données à installer : **SQLite est intégré** au backend et le fichier de base est
-créé automatiquement au premier démarrage.
+Aucun serveur de base de données à installer : le projet utilise **SQLite** par défaut, un simple
+fichier créé automatiquement. Le passage à **PostgreSQL** est possible sans changer le code
+(voir [Base de données et migrations Alembic](#base-de-données-et-migrations-alembic)).
 
-Si `node -v` affiche une erreur, installez Node.js LTS depuis <https://nodejs.org> (version « LTS »,
-pas « Current »), puis **fermez et rouvrez** votre terminal.
+Sous Windows, si `python` n'est pas reconnu, essayez `py --version` et remplacez `python` par `py`
+dans toutes les commandes ci-dessous.
 
 ---
 
-## Lancer l'application (pas à pas)
+## Lancer le backend Python
 
-L'application a besoin de **deux programmes en même temps** : le backend et le frontend.
-Il faut donc **deux terminaux ouverts côte à côte** (par exemple deux fenêtres PowerShell).
+### Étape 1 — Créer et activer un environnement virtuel
 
-### Étape 1 — Ouvrir un premier terminal et démarrer le backend
-
-```bash
-cd backend
-npm install
-npm start
-```
-
-- `npm install` télécharge les dépendances : à faire **une seule fois** (quelques dizaines de secondes).
-- `npm start` démarre l'API et doit afficher :
-
-```
-SkillSwap API sur http://localhost:4000
-```
-
-**Laissez ce terminal ouvert** : le backend doit tourner pendant toute la durée de l'utilisation.
-
-### Étape 2 — (Optionnel) Charger des données de démonstration
-
-Dans un **troisième terminal** (ou après avoir arrêté le backend avec `Ctrl + C`) :
+Un environnement virtuel isole les dépendances du projet de celles du système.
 
 ```bash
 cd backend
-npm run seed
+python -m venv .venv
 ```
 
-Cela crée 2 étudiants et 3 offres déjà publiées avec des créneaux, pour tester immédiatement.
-Cette commande est sans danger : elle ne crée pas de doublons si vous la relancez.
+Activation :
 
-### Étape 3 — Ouvrir un second terminal et démarrer le frontend
+```bash
+# Windows (PowerShell)
+.venv\Scripts\Activate.ps1
+
+# Windows (cmd)
+.venv\Scripts\activate.bat
+
+# macOS / Linux
+source .venv/bin/activate
+```
+
+Le prompt du terminal commence alors par `(.venv)`.
+
+### Étape 2 — Installer les dépendances
+
+```bash
+pip install -r requirements.txt
+```
+
+Cela installe FastAPI, Uvicorn, SQLAlchemy, Alembic, PyJWT, bcrypt et python-dotenv.
+À faire **une seule fois** par environnement.
+
+### Étape 3 — Créer la base de données avec Alembic
+
+```bash
+python -m alembic upgrade head
+```
+
+Cette commande applique la migration `0001_schema_initial` et crée toutes les tables
+(`users`, `offers`, `slots`, `bookings`, `credit_movements`, `reviews`, `disputes`, …)
+dans le fichier `backend/skillswap.db`.
+
+### Étape 4 — (Optionnel) Charger des données de démonstration
+
+```bash
+python -m app.seed
+```
+
+Crée 2 étudiants et 3 offres publiées avec des créneaux, pour tester immédiatement.
+La commande ne crée pas de doublons si vous la relancez.
+
+### Étape 5 — Démarrer l'API
+
+```bash
+python -m uvicorn app.main:app --reload --port 4000
+```
+
+Vous devez voir :
+
+```
+INFO:     Uvicorn running on http://127.0.0.1:4000 (Press CTRL+C to quit)
+INFO:     Application startup complete.
+```
+
+**Laissez ce terminal ouvert.** L'option `--reload` redémarre automatiquement le serveur
+à chaque modification d'un fichier Python.
+
+> La documentation interactive de l'API est disponible sur <http://localhost:4000/docs>.
+> Elle permet de tester chaque route directement depuis le navigateur.
+
+---
+
+## Lancer le frontend
+
+Ouvrez **un second terminal** (le backend doit continuer de tourner) :
 
 ```bash
 cd frontend
@@ -128,30 +174,10 @@ Le terminal affiche :
   ➜  Local:   http://localhost:5173/
 ```
 
-### Étape 4 — Ouvrir l'application
+Ouvrez ensuite **<http://localhost:5173>** dans votre navigateur.
 
-Dans votre navigateur : **<http://localhost:5173>**
-
-Vous arrivez sur la page de connexion. Connectez-vous avec un compte ci-dessous, ou créez un compte
-avec le lien « S'inscrire » (2 crédits offerts).
-
-> ⚠️ N'ouvrez pas <http://localhost:4000> dans le navigateur : c'est l'API, elle répond du JSON brut.
-> L'interface est uniquement sur le port **5173**.
-
-### Comment arrêter l'application
-
-Dans chaque terminal : `Ctrl + C`, puis `O` si Windows demande confirmation.
-
-### Windows : erreurs fréquentes au démarrage
-
-PowerShell peut bloquer `npm` avec un message du type *« l'exécution de scripts est désactivée »*.
-Dans ce cas, lancez une fois :
-
-```powershell
-Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
-```
-
-Ou utilisez directement **Invite de commandes (cmd)** au lieu de PowerShell.
+> ⚠️ N'ouvrez pas <http://localhost:5173> avant d'avoir démarré le backend : la page s'afficherait
+> mais la connexion échouerait avec « Impossible de joindre le serveur ».
 
 ---
 
@@ -159,15 +185,15 @@ Ou utilisez directement **Invite de commandes (cmd)** au lieu de PowerShell.
 
 | Rôle | E-mail | Mot de passe | Comment l'obtenir |
 |---|---|---|---|
-| **Administrateur** | `admin@skillswap.ma` | `Admin123!` | créé automatiquement au premier démarrage |
-| Étudiant 1 | `sara@campus.ma` | `password123` | après `npm run seed` |
-| Étudiant 2 | `amine@campus.ma` | `password123` | après `npm run seed` |
+| **Administrateur** | `admin@skillswap.ma` | `Admin123!` | créé automatiquement au démarrage de l'API |
+| Étudiant 1 | `sara@campus.ma` | `password123` | après `python -m app.seed` |
+| Étudiant 2 | `amine@campus.ma` | `password123` | après `python -m app.seed` |
 
 L'administrateur n'a pas de portefeuille de crédits : sa connexion ouvre directement l'espace
 d'administration. Pour tester un parcours étudiant, utilisez Sara ou Amine, ou créez un compte.
 
-> En production, changez le mot de passe administrateur (il est défini dans `backend/src/db.js`)
-> et la valeur de `JWT_SECRET` (voir [Variables d'environnement](#variables-denvironnement)).
+Les identifiants de l'administrateur se changent avec `ADMIN_EMAIL` et `ADMIN_PASSWORD`
+dans le fichier `.env`.
 
 ---
 
@@ -175,11 +201,11 @@ d'administration. Pour tester un parcours étudiant, utilisez Sara ou Amine, ou 
 
 | Test | Résultat attendu |
 |---|---|
-| `curl http://localhost:4000/api/health` | `{"ok":true}` |
-| Ouvrir <http://localhost:5173> | page de connexion SkillSwap Campus |
+| <http://localhost:4000/api/health> | `{"ok":true}` |
+| <http://localhost:4000/docs> | documentation interactive FastAPI |
+| <http://localhost:5173> | page de connexion SkillSwap Campus |
 | Se connecter avec `sara@campus.ma` | catalogue avec les offres de démonstration |
 | Mauvais mot de passe | message « Identifiants incorrects. » |
-| Arrêter le backend puis recharger une page | message « Impossible de joindre le serveur… » |
 
 ---
 
@@ -204,9 +230,59 @@ Pour vérifier le fonctionnement de bout en bout, utilisez **deux navigateurs di
 
 ---
 
-## Variables d'environnement
+## Base de données et migrations Alembic
 
-### Backend
+Le schéma est **versionné par Alembic** : la base n'est jamais créée à la main, elle est
+construite en appliquant les migrations.
+
+| Commande | Effet |
+|---|---|
+| `python -m alembic upgrade head` | applique toutes les migrations (crée la base si besoin) |
+| `python -m alembic current` | affiche la version actuelle du schéma |
+| `python -m alembic history` | liste les migrations |
+| `python -m alembic downgrade -1` | annule la dernière migration |
+| `python -m alembic revision --autogenerate -m "ajout table x"` | génère une migration à partir des modèles |
+
+**Ajouter une table ou une colonne** : modifiez `backend/app/models.py`, puis
+
+```bash
+python -m alembic revision --autogenerate -m "description du changement"
+python -m alembic upgrade head
+```
+
+Relisez toujours le fichier généré dans `backend/alembic/versions/` avant de l'appliquer.
+
+**Repartir d'une base vide** : arrêtez l'API, supprimez le fichier, relancez les migrations.
+
+```bash
+# Windows
+del skillswap.db*
+
+# macOS / Linux
+rm skillswap.db*
+
+python -m alembic upgrade head
+python -m app.seed        # facultatif
+```
+
+**Passer à PostgreSQL** (facultatif) : installez le pilote, puis indiquez l'URL de connexion.
+
+```bash
+pip install "psycopg[binary]"
+```
+
+Dans `backend/.env` :
+
+```
+DATABASE_URL=postgresql+psycopg://utilisateur:motdepasse@localhost:5432/skillswap
+```
+
+Puis `python -m alembic upgrade head`. Aucun autre changement n'est nécessaire : les modèles
+et les index (y compris les index partiels) sont compatibles PostgreSQL.
+
+---
+
+## Variables d'environnement
 
 Copiez le modèle puis adaptez-le (facultatif, des valeurs par défaut existent) :
 
@@ -217,74 +293,41 @@ cp .env.example .env      # Windows : copy .env.example .env
 
 | Variable | Défaut | Rôle |
 |---|---|---|
-| `PORT` | `4000` | port d'écoute de l'API |
-| `JWT_SECRET` | `dev-secret-change-me` | clé de signature des jetons de connexion — **à changer** |
-| `DB_FILE` | `backend/skillswap.db` | emplacement du fichier SQLite |
+| `PORT` | `4000` | port conseillé pour l'API (passé à Uvicorn en ligne de commande) |
+| `DATABASE_URL` | `sqlite:///backend/skillswap.db` | base de données (SQLite ou PostgreSQL) |
+| `JWT_SECRET` | clé de développement | signature des jetons — **à changer** |
+| `ADMIN_EMAIL` | `admin@skillswap.ma` | e-mail du compte administrateur créé au démarrage |
+| `ADMIN_PASSWORD` | `Admin123!` | mot de passe de ce compte |
 
-Le fichier `.env` est lu automatiquement au démarrage (`dotenv`) et n'est **jamais** versionné.
+Le fichier `.env` est lu automatiquement au démarrage (`python-dotenv`) et n'est **jamais** versionné.
 
-### Frontend
+Côté frontend, deux variables facultatives :
 
 | Variable | Défaut | Rôle |
 |---|---|---|
 | `VITE_API_URL` | `http://localhost:4000` | cible du proxy de développement pour `/api` |
 | `VITE_API_BASE` | `/api` | préfixe des appels API côté navigateur |
 
-En développement, vous n'avez **rien à configurer** : Vite redirige automatiquement `/api` vers le
-backend. Si vous changez le port du backend, créez `frontend/.env.local` :
-
-```
-VITE_API_URL=http://localhost:4001
-```
-
-Pour un build de production servi par un autre serveur que Vite, indiquez l'URL complète de l'API
-**au moment du build** (les variables `VITE_*` sont figées à la compilation) :
-
-```bash
-# macOS / Linux
-VITE_API_BASE=http://localhost:4000/api npm run build
-
-# Windows PowerShell
-$env:VITE_API_BASE="http://localhost:4000/api"; npm run build
-```
-
 ---
 
-## Commandes npm
+## Commandes utiles
 
-### `backend/`
+### `backend/` (environnement virtuel activé)
 
 | Commande | Effet |
 |---|---|
-| `npm start` | démarre l'API |
-| `npm run dev` | démarre l'API et **redémarre automatiquement** à chaque modification |
-| `npm run seed` | insère les données de démonstration (sans doublons) |
-| `npm test` | lance les tests des règles de gestion (base en mémoire) |
+| `python -m uvicorn app.main:app --reload --port 4000` | démarre l'API avec rechargement automatique |
+| `python -m alembic upgrade head` | applique les migrations |
+| `python -m app.seed` | données de démonstration |
+| `python -m app.test_rules` | tests des règles de gestion |
 
 ### `frontend/`
 
 | Commande | Effet |
 |---|---|
-| `npm run dev` | serveur de développement avec rechargement à chaud |
+| `npm run dev` | serveur de développement (port 5173) |
 | `npm run build` | build de production dans `frontend/dist/` |
 | `npm run preview` | sert le build de production (port 4173) |
-
----
-
-## Réinitialiser la base de données
-
-Tout est stocké dans un seul fichier : `backend/skillswap.db`.
-
-Pour repartir de zéro : arrêtez le backend (`Ctrl + C`), supprimez le fichier, redémarrez.
-
-```bash
-cd backend
-rm skillswap.db skillswap.db-shm skillswap.db-wal    # Windows : del skillswap.db*
-npm start
-```
-
-Au démarrage suivant, la base est recréée avec les catégories par défaut et le compte administrateur.
-Relancez `npm run seed` si vous voulez retrouver les données de démonstration.
 
 ---
 
@@ -292,17 +335,17 @@ Relancez `npm run seed` si vous voulez retrouver les données de démonstration.
 
 ```bash
 cd backend
-npm test
+python -m app.test_rules
 ```
 
-Le script vérifie les règles de gestion sur une base **en mémoire** : vos données réelles ne sont
-jamais modifiées. Il couvre notamment le blocage et le transfert des crédits, le refus des doublons,
-les conflits de planning, les droits d'accès, le déroulement d'un litige et l'unicité du règlement.
+Le script crée une base **temporaire** (vos données ne sont pas touchées), applique la migration
+Alembic, puis vérifie les règles de gestion : blocage et transfert des crédits, refus des doublons,
+conflits de planning, droits d'accès, déroulement d'un litige, unicité du règlement.
 
 Résultat attendu :
 
 ```
-43 vérifications réussies ✅
+42 vérifications réussies ✅
 ```
 
 ---
@@ -311,33 +354,34 @@ Résultat attendu :
 
 ```
 skillswap-campus-app/
-├── backend/
-│   ├── .env.example         modèle de configuration
-│   ├── package.json
-│   └── src/
-│       ├── db.js            schéma SQLite, index, données initiales
-│       ├── services.js      règles métier (crédits, réservations, litiges)
-│       ├── server.js        routes REST + authentification JWT
-│       ├── seed.js          données de démonstration
-│       └── test.js          tests des règles de gestion
+├── backend/                        API Python
+│   ├── .env.example                modèle de configuration
+│   ├── requirements.txt            dépendances Python
+│   ├── alembic.ini                 configuration Alembic
+│   ├── alembic/
+│   │   ├── env.py                  branchement d'Alembic sur les modèles
+│   │   └── versions/
+│   │       └── 0001_schema_initial.py   migration initiale
+│   └── app/
+│       ├── config.py               configuration (.env)
+│       ├── db.py                   moteur et session SQLAlchemy
+│       ├── models.py               tables (User, Offer, Slot, Booking, …)
+│       ├── schemas.py              schémas Pydantic d'entrée
+│       ├── security.py             bcrypt + jetons JWT
+│       ├── serializers.py          conversion en JSON pour le frontend
+│       ├── services.py             règles métier RG01 à RG19
+│       ├── main.py                 application FastAPI et routes
+│       ├── seed.py                 données de démonstration
+│       └── test_rules.py           tests des règles de gestion
 │
-└── frontend/
-    ├── index.html
-    ├── vite.config.js       port 5173 + proxy /api → backend
+└── frontend/                       interface React
+    ├── vite.config.js              port 5173 + proxy /api → backend
     └── src/
-        ├── main.jsx         point d'entrée
-        ├── App.jsx          routes et navigation
-        ├── api.js           client HTTP + formatage des dates
-        ├── auth.jsx         contexte d'authentification
-        ├── ui.jsx           composants réutilisables (badges, modales, notes)
-        ├── styles.css
-        └── pages/
-            ├── Login.jsx, Register.jsx, Profile.jsx
-            ├── Catalog.jsx, OfferDetail.jsx
-            ├── MyOffers.jsx, OfferForm.jsx
-            ├── Requests.jsx, Planning.jsx, Wallet.jsx
-            ├── Notifications.jsx, Disputes.jsx, DisputeDetail.jsx
-            └── admin/       tableau de bord, comptes, catégories, modération, litiges
+        ├── App.jsx                 routes et navigation
+        ├── api.js                  client HTTP
+        ├── auth.jsx                contexte d'authentification
+        ├── ui.jsx                  composants réutilisables
+        └── pages/                  catalogue, offres, demandes, crédits, admin…
 ```
 
 **Pages de l'interface**
@@ -359,41 +403,38 @@ skillswap-campus-app/
 
 ## Où sont appliquées les règles de gestion
 
-Les contrôles sont faits **côté serveur** (l'interface ne fait que les refléter) et renforcés par
-des contraintes SQL, afin qu'ils restent valables même en cas d'appels simultanés.
+Tous les contrôles sont faits **côté serveur** (`app/services.py`) et renforcés par des
+contraintes SQL, afin qu'ils restent valables même en cas d'appels simultanés.
 
 | Règle | Implémentation |
 |---|---|
-| RG01 — e-mail unique, 2 crédits une seule fois | `UNIQUE` sur `users.email`, inscription dans une transaction |
+| RG01 — e-mail unique, 2 crédits une seule fois | colonne `email` unique + inscription transactionnelle |
 | RG02 — offre publiée, active, non masquée | filtres de `GET /api/offers` |
-| RG03 — pas de réservation de sa propre offre, pas de doublon | contrôles + index unique partiel `uq_booking_dup` |
-| RG04 — créneau futur et libre, pas de chevauchement d'offres | contrôles à la création du créneau |
-| RG05 — solde suffisant | contrôle à la demande et à l'acceptation |
-| RG06 — blocage à l'acceptation | `blocked` + mouvement `blocage` |
-| RG07 — un seul bénéficiaire par créneau | index unique `uq_slot_active`, autres demandes refusées automatiquement |
-| RG08 — pas de séances qui se chevauchent | `hasConflict()` à l'acceptation (séances consécutives autorisées) |
-| RG09 — visibilité du lieu après acceptation | filtrage dans `offerView` / `bookingView` |
-| RG10 — annulation avant le début, crédits libérés | `cancelBooking()` |
-| RG11 — confirmation possible après l'heure de fin | `confirmBooking()` |
-| RG12 — transfert après **double** confirmation | `transferCredits()` |
-| RG13 — litige : crédits bloqués, décision admin | `openDispute()` / `resolveDispute()` |
-| RG14 — règlement unique et définitif | index `uq_transfer_once`, `settled` |
-| RG15 — une évaluation par participant et par séance | `UNIQUE(booking_id, author_id)` |
+| RG03 — pas de réservation de sa propre offre, pas de doublon | `request_booking()` + index unique `uq_booking_dup` |
+| RG04 — créneau futur et libre, pas de chevauchement d'offres | `add_slot()` et `change_offer_status()` |
+| RG05 — solde suffisant | contrôles à la demande et à l'acceptation |
+| RG06 — blocage à l'acceptation | `accept_booking()` + mouvement `blocage` |
+| RG07 — un seul bénéficiaire par créneau | index unique `uq_slot_active`, autres demandes refusées |
+| RG08 — pas de séances qui se chevauchent | `has_conflict()` (séances consécutives autorisées) |
+| RG09 — visibilité du lieu après acceptation | `offer_view()` / `booking_view()` |
+| RG10 — annulation avant le début, crédits libérés | `cancel_booking()` |
+| RG11 — confirmation après l'heure de fin | `confirm_booking()` |
+| RG12 — transfert après **double** confirmation | `transfer_credits()` |
+| RG13 — litige : crédits bloqués, décision admin | `open_dispute()` / `resolve_dispute()` |
+| RG14 — règlement unique et définitif | index `uq_transfer_once` + `settled` |
+| RG15 — une évaluation par participant et par séance | `UniqueConstraint(booking_id, author_id)` |
 | RG16 — crédits jamais négatifs | `CHECK (balance >= 0)`, `CHECK (blocked >= 0)` |
-| RG17 — archivage / masquage annule les demandes en attente | `cancelPendingForOffer()` |
-| RG18 — compte désactivé : connexion et réservations bloquées | `setUserActive()` |
+| RG17 — archivage / masquage annule les demandes en attente | `cancel_pending_for_offer()` |
+| RG18 — compte désactivé : connexion et réservations bloquées | `set_user_active()` |
 | RG19 — litiges et lieux réservés aux participants et à l'admin | contrôles d'accès sur chaque route |
-
-Toutes les opérations sensibles s'exécutent dans des **transactions SQLite sérialisées** : deux clics
-simultanés ne peuvent pas provoquer une double attribution de créneau ni un double transfert de crédits.
-Les boutons de l'interface sont également désactivés pendant l'envoi d'une requête.
 
 ---
 
 ## API REST
 
 Authentification par jeton : envoyez l'en-tête `Authorization: Bearer <token>` renvoyé par
-`/auth/login` ou `/auth/register`. Les routes marquées **Admin** exigent le rôle `admin`.
+`/api/auth/login` ou `/api/auth/register`. Les routes marquées **Admin** exigent le rôle `admin`.
+Toutes les erreurs renvoient un code HTTP 4xx/5xx et un corps `{ "error": "message" }`.
 
 ### Authentification et profils
 
@@ -403,7 +444,7 @@ Authentification par jeton : envoyez l'en-tête `Authorization: Bearer <token>` 
 | `POST` | `/api/auth/login` | connexion → `{ token, user }` |
 | `GET` | `/api/me` | profil courant + note moyenne |
 | `PUT` | `/api/me` | mise à jour du profil |
-| `GET` | `/api/users/:id` | profil public + évaluations |
+| `GET` | `/api/users/{id}` | profil public + évaluations |
 
 ### Catégories
 
@@ -411,8 +452,8 @@ Authentification par jeton : envoyez l'en-tête `Authorization: Bearer <token>` 
 |---|---|---|
 | `GET` | `/api/categories` | liste des catégories |
 | `POST` | `/api/categories` | **Admin** — créer |
-| `PUT` | `/api/categories/:id` | **Admin** — renommer |
-| `DELETE` | `/api/categories/:id` | **Admin** — supprimer (refusé si utilisée) |
+| `PUT` | `/api/categories/{id}` | **Admin** — renommer |
+| `DELETE` | `/api/categories/{id}` | **Admin** — supprimer (refusé si utilisée) |
 
 ### Offres et créneaux
 
@@ -420,12 +461,12 @@ Authentification par jeton : envoyez l'en-tête `Authorization: Bearer <token>` 
 |---|---|---|
 | `GET` | `/api/offers` | catalogue — filtres `q`, `category_id`, `level`, `mode`, `date`, `suggestions=1` |
 | `GET` | `/api/offers/mine` | mes offres (tous états) |
-| `GET` | `/api/offers/:id` | détail d'une offre |
+| `GET` | `/api/offers/{id}` | détail d'une offre |
 | `POST` | `/api/offers` | créer une offre (brouillon) |
-| `PUT` | `/api/offers/:id` | modifier (durée verrouillée si séance acceptée) |
-| `POST` | `/api/offers/:id/status` | `{ status: "brouillon" \| "publiée" \| "archivée" }` |
-| `POST` | `/api/offers/:id/slots` | ajouter un créneau `{ start_at, location }` |
-| `DELETE` | `/api/slots/:id` | supprimer un créneau libre |
+| `PUT` | `/api/offers/{id}` | modifier (durée verrouillée si séance acceptée) |
+| `POST` | `/api/offers/{id}/status` | `{ "status": "brouillon" \| "publiée" \| "archivée" }` |
+| `POST` | `/api/offers/{id}/slots` | ajouter un créneau `{ start_at, location }` |
+| `DELETE` | `/api/slots/{id}` | supprimer un créneau libre |
 
 ### Réservations
 
@@ -434,13 +475,13 @@ Authentification par jeton : envoyez l'en-tête `Authorization: Bearer <token>` 
 | `POST` | `/api/bookings` | demander un créneau `{ slot_id }` |
 | `GET` | `/api/bookings?box=sent\|received` | mes demandes |
 | `GET` | `/api/planning` | séances acceptées |
-| `POST` | `/api/bookings/:id/accept` | intervenant : accepter (bloque les crédits) |
-| `POST` | `/api/bookings/:id/refuse` | intervenant : refuser `{ reason }` |
-| `POST` | `/api/bookings/:id/withdraw` | bénéficiaire : retirer une demande en attente |
-| `POST` | `/api/bookings/:id/cancel` | annuler une séance avant son début |
-| `POST` | `/api/bookings/:id/confirm` | confirmer la réalisation |
-| `POST` | `/api/bookings/:id/review` | évaluer `{ rating, comment }` |
-| `POST` | `/api/bookings/:id/dispute` | signaler `{ kind, description }` |
+| `POST` | `/api/bookings/{id}/accept` | intervenant : accepter (bloque les crédits) |
+| `POST` | `/api/bookings/{id}/refuse` | intervenant : refuser `{ reason }` |
+| `POST` | `/api/bookings/{id}/withdraw` | bénéficiaire : retirer une demande en attente |
+| `POST` | `/api/bookings/{id}/cancel` | annuler une séance avant son début |
+| `POST` | `/api/bookings/{id}/confirm` | confirmer la réalisation |
+| `POST` | `/api/bookings/{id}/review` | évaluer `{ rating, comment }` |
+| `POST` | `/api/bookings/{id}/dispute` | signaler `{ kind, description }` |
 
 ### Crédits, notifications, litiges
 
@@ -450,9 +491,9 @@ Authentification par jeton : envoyez l'en-tête `Authorization: Bearer <token>` 
 | `GET` | `/api/notifications` | mes notifications |
 | `POST` | `/api/notifications/read` | tout marquer comme lu |
 | `GET` | `/api/disputes` | mes litiges (tous pour l'admin) |
-| `GET` | `/api/disputes/:id` | détail + messages |
-| `POST` | `/api/disputes/:id/messages` | ajouter un message |
-| `POST` | `/api/admin/disputes/:id/resolve` | **Admin** — `{ decision: "transfert" \| "restitution", reason }` |
+| `GET` | `/api/disputes/{id}` | détail + messages |
+| `POST` | `/api/disputes/{id}/messages` | ajouter un message |
+| `POST` | `/api/admin/disputes/{id}/resolve` | **Admin** — `{ decision, reason }` |
 
 ### Administration
 
@@ -460,31 +501,45 @@ Authentification par jeton : envoyez l'en-tête `Authorization: Bearer <token>` 
 |---|---|---|
 | `GET` | `/api/admin/stats` | indicateurs du tableau de bord |
 | `GET` | `/api/admin/users` | tous les comptes |
-| `POST` | `/api/admin/users/:id/active` | activer / désactiver `{ active }` |
+| `POST` | `/api/admin/users/{id}/active` | activer / désactiver `{ active }` |
 | `GET` | `/api/admin/offers` | offres pour la modération |
-| `POST` | `/api/admin/offers/:id/hide` | masquer / réafficher `{ hidden }` |
+| `POST` | `/api/admin/offers/{id}/hide` | masquer / réafficher `{ hidden }` |
 | `GET` | `/api/admin/bookings` | séances acceptées et en litige |
-| `POST` | `/api/admin/bookings/:id/cancel` | annuler une séance (crédits libérés) |
+| `POST` | `/api/admin/bookings/{id}/cancel` | annuler une séance (crédits libérés) |
 
 ---
 
-## Brancher votre propre backend
+## Brancher le frontend sur une autre API
 
-Le frontend est indépendant du backend fourni. Pour utiliser le vôtre :
+Par défaut, le frontend appelle `/api` et le serveur de développement Vite **redirige** ces appels
+vers `http://localhost:4000` (voir `frontend/vite.config.js`). Rien à configurer si l'API écoute
+sur ce port.
 
-1. Implémentez les routes `/api/...` listées ci-dessus et renvoyez du JSON.
-2. Authentifiez-vous avec un jeton `Bearer` (même mécanisme que JWT).
-3. En cas d'erreur, renvoyez un code HTTP 4xx/5xx et un corps `{ "error": "message lisible" }` :
-   c'est ce message qui s'affiche dans l'interface.
-4. Indiquez l'adresse de votre API au frontend :
-   - en développement : `frontend/.env.local` avec `VITE_API_URL=http://localhost:VOTRE_PORT` ;
-   - si votre API est sur une autre origine : `VITE_API_BASE=http://localhost:VOTRE_PORT/api`
-     (les CORS sont ouverts dans le backend fourni ; configurez-les chez vous).
-5. Les règles de gestion doivent être appliquées **côté serveur** : l'interface ne fait que les
-   afficher, elle ne peut pas garantir l'unicité d'un transfert de crédits.
+**Si votre API écoute sur un autre port**, créez `frontend/.env.local` :
 
-Les formats de données attendus sont directement lisibles dans `frontend/src/pages/` et
-`backend/src/server.js`.
+```
+VITE_API_URL=http://localhost:8000
+```
+
+**Si votre API est sur une autre origine** (autre machine, autre domaine), indiquez l'URL complète.
+Cette variable est lue **au moment du build** :
+
+```bash
+# macOS / Linux
+VITE_API_BASE=http://192.168.1.10:8000/api npm run build
+
+# Windows PowerShell
+$env:VITE_API_BASE="http://192.168.1.10:8000/api"; npm run build
+```
+
+Pour rester compatible avec l'interface, votre API doit :
+
+1. exposer les routes `/api/...` listées ci-dessus ;
+2. authentifier par jeton `Bearer` ;
+3. renvoyer les erreurs sous la forme `{ "error": "message lisible" }` ;
+4. renvoyer les dates de créneaux avec fuseau (`2026-11-20T17:00:00Z`) et les horodatages
+   sans fuseau (`2026-11-20T17:00:00`), comme le fait `app/serializers.py` ;
+5. autoriser les requêtes cross-origin (CORS) si le frontend et l'API n'ont pas le même port.
 
 ---
 
@@ -492,15 +547,18 @@ Les formats de données attendus sont directement lisibles dans `frontend/src/pa
 
 | Problème | Cause probable | Solution |
 |---|---|---|
-| `This site can't be reached` sur le port 5173 | frontend non démarré | lancer `npm run dev` dans `frontend/` |
-| « Impossible de joindre le serveur » dans l'app | backend arrêté ou mauvais port | lancer `npm start` dans `backend/`, vérifier le port 4000 |
-| `EADDRINUSE` au démarrage | port déjà utilisé | voir ci-dessous |
-| Page blanche | ancien build ou erreur JS | `Ctrl + F5`, vider le cache, vérifier la console du navigateur |
-| `npm install` échoue sur `better-sqlite3` | compilation native | installer Node.js **LTS**, puis `npm rebuild better-sqlite3` |
-| « l'exécution de scripts est désactivée » (Windows) | politique PowerShell | `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned` |
-| Les données de démo n'apparaissent pas | `npm run seed` non lancé | lancer `npm run seed` dans `backend/` |
-| Connexion refusée après `npm run seed` | base créée avec d'autres identifiants | supprimer `backend/skillswap.db` puis redémarrer |
-| Modifications du code sans effet | serveur lancé avec `npm start` | utiliser `npm run dev` pour le rechargement automatique |
+| `python : commande introuvable` | Python absent du PATH | utilisez `py` sous Windows, ou réinstallez Python en cochant « Add to PATH » |
+| `.venv\Scripts\Activate.ps1` refusé | politique PowerShell | `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned` |
+| `ModuleNotFoundError: No module named 'app'` | commande lancée hors de `backend/` | placez-vous dans `backend/` avant de lancer la commande |
+| `alembic : commande introuvable` | environnement virtuel non activé | `python -m alembic upgrade head` |
+| `no such table: users` | migrations non appliquées | `python -m alembic upgrade head` |
+| `no such table: alembic_version` | base créée hors migration | supprimez `skillswap.db*` puis relancez les migrations |
+| `Address already in use` (port 4000) | ancien serveur encore actif | fermez le terminal concerné, ou `--port 4001` + `VITE_API_URL` |
+| « Impossible de joindre le serveur » dans l'app | API arrêtée | relancez `python -m uvicorn app.main:app --reload --port 4000` |
+| Page blanche | erreur JavaScript | `F12` → Console, puis `Ctrl + F5` |
+| `ModuleNotFoundError: psycopg` | PostgreSQL sans pilote | `pip install "psycopg[binary]"` |
+| Les données de démo n'apparaissent pas | seed non lancé | `python -m app.seed` |
+| Connexion refusée après changement de `.env` | ancien compte en base | supprimez `skillswap.db*`, refaites les migrations |
 
 **Libérer un port occupé**
 
@@ -518,8 +576,8 @@ kill -9 <PID>
 
 ## Notes et limites
 
-- Les notifications sont rafraîchies toutes les 15 secondes (pas de WebSocket) : l'interface n'est pas
-  temps réel.
+- Les notifications sont rafraîchies toutes les 15 secondes (pas de WebSocket) : l'interface n'est
+  pas temps réel.
 - Aucun envoi d'e-mail : l'adresse sert uniquement d'identifiant.
 - Les crédits n'ont pas de valeur monétaire et ne sont ni achetables ni convertibles.
-- Le fichier `backend/skillswap.db` et les dossiers `node_modules/` ne sont pas versionnés.
+- Le jeton de connexion expire au bout de 7 jours : il suffit de se reconnecter.
