@@ -1,3 +1,4 @@
+import 'dotenv/config';
 // Données de démonstration (optionnel) : npm run seed
 import bcrypt from 'bcryptjs';
 import { db } from './db.js';
