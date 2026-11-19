@@ -228,26 +228,37 @@ le client.
 <h1 class="newpage">4. Description des cas d'utilisation</h1>
 
 <h2>4.1 Vue d'ensemble</h2>
+<p>
+Le diagramme de cas d'utilisation (figure 1) comporte 24 cas répartis en six domaines. Les cas UC14 et UC15
+ne sont pas déclenchés directement par un acteur : ils sont inclus dans d'autres cas, conformément aux règles
+de gestion.
+</p>
 <table>
-  <tr><th style="width:9%">Réf.</th><th style="width:38%">Cas d'utilisation</th><th style="width:16%">Acteur</th><th>Règles liées</th></tr>
+  <tr><th style="width:9%">Réf.</th><th style="width:40%">Cas d'utilisation</th><th style="width:20%">Acteur</th><th>Règles liées</th></tr>
   <tr><td>UC01</td><td>S'inscrire</td><td>Visiteur</td><td>RG01</td></tr>
   <tr><td>UC02</td><td>Se connecter</td><td>Étudiant</td><td>RG01, RG18</td></tr>
-  <tr><td>UC03</td><td>Gérer son profil</td><td>Étudiant</td><td></td></tr>
+  <tr><td>UC03</td><td>Gérer son profil (compétences recherchées)</td><td>Étudiant</td><td></td></tr>
   <tr><td>UC04</td><td>Publier une offre</td><td>Étudiant</td><td>RG04, RG17</td></tr>
   <tr><td>UC05</td><td>Gérer les créneaux</td><td>Étudiant</td><td>RG04</td></tr>
   <tr><td>UC06</td><td>Rechercher une offre</td><td>Étudiant</td><td>RG02</td></tr>
   <tr><td>UC07</td><td>Consulter les suggestions</td><td>Étudiant</td><td>RG02</td></tr>
   <tr><td>UC08</td><td>Demander un créneau</td><td>Étudiant</td><td>RG03, RG05</td></tr>
-  <tr><td>UC09</td><td>Accepter une demande</td><td>Étudiant</td><td>RG05, RG06, RG07, RG08</td></tr>
+  <tr><td>UC09</td><td>Accepter une demande</td><td>Étudiant</td><td>RG05 à RG08</td></tr>
   <tr><td>UC10</td><td>Refuser une demande</td><td>Étudiant</td><td></td></tr>
   <tr><td>UC11</td><td>Consulter son planning</td><td>Étudiant</td><td>RG09</td></tr>
-  <tr><td>UC12</td><td>Annuler une séance</td><td>Étudiant</td><td>RG10</td></tr>
-  <tr><td>UC13</td><td>Confirmer la réalisation</td><td>Étudiant</td><td>RG11, RG12</td></tr>
-  <tr><td>UC14</td><td>Consulter ses crédits</td><td>Étudiant</td><td>RG06, RG16</td></tr>
-  <tr><td>UC15</td><td>Évaluer un participant</td><td>Étudiant</td><td>RG15</td></tr>
-  <tr><td>UC16</td><td>Signaler un problème</td><td>Étudiant</td><td>RG13</td></tr>
-  <tr><td>UC17</td><td>Trancher un litige</td><td>Administrateur</td><td>RG13, RG14</td></tr>
-  <tr><td>UC18</td><td>Administrer la plateforme (comptes, catégories, modération, indicateurs)</td><td>Administrateur</td><td>RG17, RG18</td></tr>
+  <tr><td>UC12</td><td>Confirmer la réalisation</td><td>Étudiant</td><td>RG11, RG12</td></tr>
+  <tr><td>UC13</td><td>Consulter ses crédits</td><td>Étudiant</td><td>RG06, RG16</td></tr>
+  <tr><td>UC14</td><td>Bloquer les crédits <span class="tag">inclus dans UC08 et UC19</span></td><td>Système</td><td>RG05, RG06</td></tr>
+  <tr><td>UC15</td><td>Transférer les crédits <span class="tag">inclus dans UC12 et UC19</span></td><td>Système</td><td>RG12, RG14</td></tr>
+  <tr><td>UC16</td><td>Évaluer un participant</td><td>Étudiant</td><td>RG15</td></tr>
+  <tr><td>UC17</td><td>Signaler un problème</td><td>Étudiant</td><td>RG13</td></tr>
+  <tr><td>UC18</td><td>Échanger sur le litige</td><td>Étudiant</td><td>RG13, RG19</td></tr>
+  <tr><td>UC19</td><td>Trancher un litige</td><td>Administrateur</td><td>RG13, RG14</td></tr>
+  <tr><td>UC20</td><td>Consulter le tableau de bord</td><td>Administrateur</td><td></td></tr>
+  <tr><td>UC21</td><td>Gérer les comptes</td><td>Administrateur</td><td>RG18</td></tr>
+  <tr><td>UC22</td><td>Gérer les catégories</td><td>Administrateur</td><td></td></tr>
+  <tr><td>UC23</td><td>Modérer les offres</td><td>Administrateur</td><td>RG17</td></tr>
+  <tr><td>UC24</td><td>Annuler une séance acceptée</td><td>Administrateur</td><td>RG10</td></tr>
 </table>
 
 <h2>4.2 Fiches détaillées</h2>
@@ -313,7 +324,7 @@ le client.
   <tr><th>Postconditions</th><td>La séance figure dans le planning des deux participants avec son lieu ; les crédits sont bloqués.</td></tr>
 </table>
 
-<h3>UC13 : Confirmer la réalisation et transférer les crédits</h3>
+<h3>UC12 : Confirmer la réalisation et transférer les crédits</h3>
 <table>
   <tr><th style="width:22%">Acteur</th><td>Les deux participants</td></tr>
   <tr><th>Préconditions</th><td>La réservation est acceptée ; l'heure de fin de la séance est passée.</td></tr>
@@ -332,7 +343,7 @@ le client.
   <tr><th>Postconditions</th><td>Le transfert est unique : aucun second transfert ni restitution n'est possible pour cette réservation.</td></tr>
 </table>
 
-<h3>UC16 : Signaler un problème</h3>
+<h3>UC17 : Signaler un problème</h3>
 <table>
   <tr><th style="width:22%">Acteur</th><td>Étudiant participant à une séance acceptée</td></tr>
   <tr><th>Préconditions</th><td>La séance a commencé ; la réservation n'est pas déjà réglée.</td></tr>
@@ -350,7 +361,7 @@ le client.
   <tr><th>Postconditions</th><td>Les crédits restent bloqués ; la réservation ne peut plus être confirmée.</td></tr>
 </table>
 
-<h3>UC17 : Trancher un litige</h3>
+<h3>UC19 : Trancher un litige</h3>
 <table>
   <tr><th style="width:22%">Acteur</th><td>Administrateur</td></tr>
   <tr><th>Préconditions</th><td>Un litige est ouvert.</td></tr>
