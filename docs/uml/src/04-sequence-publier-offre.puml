@@ -1,0 +1,55 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "DejaVu Sans"
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam ArrowColor #4F46E5
+skinparam ArrowFontColor #333333
+skinparam ArrowFontSize 11
+title Publier une offre et ses créneaux (RG04, RG09, RG17)
+autonumber
+
+actor "Étudiant (intervenant)" as E
+participant "Interface React" as UI
+participant "API FastAPI" as API
+database "SQLite" as DB
+
+E -> UI : crée une offre (titre, catégorie, niveau, durée, mode)
+UI -> API : POST /api/offers
+API -> DB : INSERT offers (status = brouillon)
+API --> UI : 201 {id}
+UI --> E : offre en brouillon
+
+E -> UI : ajoute un créneau (date + lieu ou lien privé)
+UI -> API : POST /api/offers/{id}/slots
+API -> DB : SELECT créneaux de l'intervenant
+alt créneau dans le passé
+  API --> UI : 400 "Le créneau doit être dans le futur."
+else chevauchement avec un autre créneau
+  API --> UI : 400 "Ce créneau chevauche un de vos autres créneaux."
+else lieu vide
+  API --> UI : 400 "Le lieu est obligatoire."
+else valide
+  API -> DB : INSERT slots (fin = début + durée)
+  API --> UI : 201 {id}
+end
+
+E -> UI : clique sur « Publier »
+UI -> API : POST /api/offers/{id}/status {status: "publiée"}
+API -> DB : SELECT COUNT(slots futurs)
+alt aucun créneau futur
+  API --> UI : 400 "Ajoutez au moins un créneau futur avant de publier."
+else au moins un créneau
+  API -> DB : UPDATE offers SET status = 'publiée'
+  API --> UI : 200 {ok: true}
+  UI --> E : offre visible dans le catalogue
+end
+
+note over API
+  RG09 : le lieu et le lien de réunion ne sont
+  transmis qu'au propriétaire, aux participants
+  et à l'administrateur.
+  RG17 : archiver ou masquer l'offre annule
+  automatiquement les demandes en attente.
+end note
+@enduml

@@ -1,0 +1,37 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "DejaVu Sans"
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam ArrowColor #4F46E5
+skinparam ArrowFontColor #333333
+skinparam ArrowFontSize 11
+title Modération d'une offre et désactivation d'un compte (RG17, RG18)
+autonumber
+
+actor "Administrateur" as A
+participant "API FastAPI" as API
+database "SQLite" as DB
+actor "Étudiant" as E
+
+A -> API : POST /api/admin/offers/{id}/hide {hidden: true}
+API -> DB : UPDATE offers SET hidden = true
+API -> DB : SELECT demandes en attente de l'offre
+API -> DB : UPDATE bookings SET status = 'annulée' (demandes en attente)
+API -> DB : INSERT notifications (propriétaire + bénéficiaires)
+API --> A : 200 {ok: true}
+
+A -> API : POST /api/admin/users/{id}/active {active: false}
+API -> DB : SELECT user
+alt compte administrateur
+  API --> A : 400 "Un administrateur ne peut pas être désactivé."
+else compte étudiant
+  API -> DB : UPDATE users SET active = false
+  API -> DB : UPDATE demandes en attente -> 'annulée'
+  API -> DB : INSERT notifications
+  API --> A : 200 {ok: true}
+end
+
+E -> API : POST /api/auth/login
+API --> E : 403 "Ce compte est désactivé."
+@enduml

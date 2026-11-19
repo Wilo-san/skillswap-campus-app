@@ -1,0 +1,59 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "DejaVu Sans"
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam ArrowColor #4F46E5
+skinparam ArrowFontColor #333333
+skinparam ArrowFontSize 11
+title Réalisation de la séance et transfert des crédits (RG10, RG11, RG12, RG14)
+autonumber
+
+actor "Intervenant" as I
+actor "Bénéficiaire" as B
+participant "API FastAPI" as API
+database "SQLite" as DB
+
+== Variante 1 : annulation avant le début (RG10) ==
+I -> API : POST /api/bookings/{id}/cancel
+API -> DB : SELECT booking, slot
+alt séance déjà commencée
+  API --> I : 400 "La séance a déjà commencé : ouvrez un signalement."
+else avant le début
+  API -> DB : UPDATE users SET balance += cost, blocked -= cost
+  API -> DB : INSERT credit_movements (libération)
+  API -> DB : UPDATE bookings SET status = 'annulée'
+  API --> I : 200 {ok: true}
+end
+
+== Scénario nominal : double confirmation (RG11, RG12) ==
+B -> API : POST /api/bookings/{id}/confirm
+API -> DB : SELECT booking, slot
+alt avant l'heure de fin
+  API --> B : 400 "La confirmation est possible uniquement après l'heure de fin."
+else après la fin
+  API -> DB : UPDATE bookings SET beneficiary_confirmed = true
+  API --> B : 200 {result: "confirmé"}
+  API -> DB : INSERT notifications (intervenant)
+end
+
+I -> API : POST /api/bookings/{id}/confirm
+API -> DB : SELECT booking
+alt déjà confirmé par ce participant
+  API --> I : 400 "Vous avez déjà confirmé cette séance."
+else un litige est ouvert
+  API --> I : 400 "Un litige est ouvert : le transfert est bloqué."
+else les deux confirmations sont présentes
+  API -> DB : UPDATE users SET blocked -= cost (bénéficiaire)
+  API -> DB : UPDATE users SET balance += cost (intervenant)
+  API -> DB : INSERT credit_movements (transfert_sortant, transfert_entrant)
+  API -> DB : UPDATE bookings SET status = 'réalisée', settled = true
+  API --> I : 200 {result: "transféré"}
+end
+
+note over API
+  RG14 : l'index unique (booking_id, type) empêche
+  un second transfert ou une seconde restitution
+  pour la même réservation.
+end note
+@enduml

@@ -1,0 +1,47 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "DejaVu Sans"
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam ArrowColor #4F46E5
+skinparam ArrowFontColor #333333
+skinparam ArrowFontSize 11
+title Inscription et connexion (RG01)
+autonumber
+
+actor "Visiteur" as V
+participant "Interface React" as UI
+participant "API FastAPI" as API
+database "SQLite" as DB
+
+== Inscription ==
+V -> UI : remplit le formulaire
+UI -> API : POST /api/auth/register
+API -> API : valide e-mail et mot de passe (8 caractères min.)
+API -> DB : SELECT users WHERE email = ?
+alt e-mail déjà utilisé
+  DB --> API : 1 ligne
+  API --> UI : 409 {error: "Cette adresse e-mail est déjà utilisée."}
+  UI --> V : message d'erreur
+else e-mail libre
+  API -> DB : INSERT users (balance = 2)
+  API -> DB : INSERT credit_movements (bienvenue, +2)
+  API --> UI : 201 {token, user}
+  UI -> UI : enregistre le jeton
+  UI --> V : espace personnel
+end
+
+== Connexion ==
+V -> UI : saisit e-mail et mot de passe
+UI -> API : POST /api/auth/login
+API -> DB : SELECT users WHERE email = ?
+alt identifiants invalides
+  API --> UI : 401 {error: "Identifiants incorrects."}
+else compte désactivé
+  API --> UI : 403 {error: "Ce compte est désactivé."}
+else succès
+  API -> API : bcrypt.checkpw()
+  API --> UI : 200 {token JWT, user}
+  UI --> V : catalogue
+end
+@enduml

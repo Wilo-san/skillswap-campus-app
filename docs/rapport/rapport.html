@@ -1,0 +1,677 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Rapport de projet : SkillSwap Campus</title>
+<style>
+  @page { size: A4; margin: 18mm 16mm 20mm 16mm; }
+  * { box-sizing: border-box; }
+  body { font-family: "DejaVu Serif", Georgia, serif; font-size: 10.5pt; line-height: 1.55; color: #1c2333; margin: 0; }
+  h1, h2, h3, h4 { font-family: "DejaVu Sans", Arial, sans-serif; color: #2f2a86; line-height: 1.25; }
+  h1 { font-size: 17pt; margin: 0 0 6mm; border-bottom: 2px solid #4f46e5; padding-bottom: 2mm; }
+  h2 { font-size: 12.5pt; margin: 8mm 0 3mm; }
+  h3 { font-size: 11pt; margin: 6mm 0 2mm; color: #3b357f; }
+  h4 { font-size: 10.5pt; margin: 4mm 0 1.5mm; color: #444; }
+  p { margin: 0 0 3mm; text-align: justify; }
+  ul, ol { margin: 0 0 3mm 5mm; padding-left: 4mm; }
+  li { margin-bottom: 1.2mm; }
+  table { width: 100%; border-collapse: collapse; margin: 3mm 0 5mm; font-size: 9pt; font-family: "DejaVu Sans", Arial, sans-serif; }
+  th { background: #eef0ff; color: #2f2a86; text-align: left; padding: 2mm; border: 0.4pt solid #c9cdf5; }
+  td { padding: 2mm; border: 0.4pt solid #d9dceb; vertical-align: top; }
+  tr:nth-child(even) td { background: #fafbff; }
+  code { font-family: "DejaVu Sans Mono", monospace; font-size: 8.8pt; background: #f2f3f9; padding: 0.4mm 1.2mm; border-radius: 2pt; }
+  pre { background: #f6f7fb; border-left: 2.5pt solid #4f46e5; padding: 3mm; font-family: "DejaVu Sans Mono", monospace; font-size: 8.6pt; line-height: 1.4; overflow-wrap: break-word; white-space: pre-wrap; margin: 3mm 0 4mm; }
+  figure { margin: 4mm 0 6mm; page-break-inside: avoid; text-align: center; }
+  figure img { max-width: 100%; border: 0.4pt solid #dfe2ef; border-radius: 2pt; }
+  figure.tall img { max-height: 236mm; width: auto; max-width: 100%; }
+  figcaption { font-family: "DejaVu Sans", Arial, sans-serif; font-size: 8.6pt; color: #5a6274; margin-top: 2mm; font-style: italic; }
+  .cover { height: 250mm; display: flex; flex-direction: column; justify-content: center; text-align: center; page-break-after: always; }
+  .cover .kicker { font-family: "DejaVu Sans", Arial, sans-serif; font-size: 9pt; letter-spacing: 1.6pt; text-transform: uppercase; color: #6b7489; }
+  .cover h1 { border: 0; font-size: 30pt; margin: 8mm 0 3mm; color: #2f2a86; }
+  .cover .sub { font-size: 12pt; color: #4a5163; margin-bottom: 14mm; font-family: "DejaVu Sans", Arial, sans-serif; }
+  .cover .meta { font-family: "DejaVu Sans", Arial, sans-serif; font-size: 10pt; color: #333; line-height: 1.9; }
+  .cover .rule { width: 60mm; height: 3pt; background: #4f46e5; margin: 6mm auto; }
+  .newpage { page-break-before: always; }
+  .toc { font-family: "DejaVu Sans", Arial, sans-serif; font-size: 10pt; }
+  .toc li { margin-bottom: 2mm; list-style: none; }
+  .toc ol { padding-left: 0; margin-left: 0; }
+  .toc .lvl2 { margin-left: 7mm; font-size: 9.2pt; color: #4a5163; }
+  .note { background: #f4f6fb; border-left: 2.5pt solid #4f46e5; padding: 3mm 4mm; margin: 3mm 0 4mm; font-size: 9.5pt; }
+  .small { font-size: 8.8pt; color: #5a6274; }
+  .tag { display: inline-block; font-family: "DejaVu Sans", Arial, sans-serif; font-size: 7.6pt; padding: 0.6mm 2mm; border-radius: 6pt; background: #eef0ff; color: #2f2a86; }
+  .grid2 { display: flex; gap: 4mm; }
+  .grid2 > div { flex: 1; }
+  .cover-shot { width: 100%; max-width: 150mm; margin: 0 auto 4mm; border: 0.5pt solid #dfe2ef; }
+</style>
+</head>
+<body>
+
+<!-- =================== PAGE DE GARDE =================== -->
+<div class="cover">
+  <div class="kicker">Mini-projet de Génie Logiciel et Modélisation UML</div>
+  <h1>SkillSwap Campus</h1>
+  <div class="sub">Plateforme d'échange de compétences entre étudiants<br>basée sur une banque de temps</div>
+  <div class="rule"></div>
+  <div class="meta">
+    Module : GL &amp; Modélisation UML (M234)<br>
+    Filière : DUT Génie Informatique, semestre 3<br>
+    Établissement : EST Béni Mellal<br>
+    Auteur : <span class="small">(à compléter)</span><br>
+    Encadrant : <span class="small">(à compléter)</span><br>
+    Date : 19 novembre 2026
+  </div>
+  <div class="rule" style="margin-top:12mm"></div>
+  <div class="meta small">Dépôt du projet : github.com/Wilo-san/skillswap-campus-app</div>
+</div>
+
+<!-- =================== SOMMAIRE =================== -->
+<h1>Sommaire</h1>
+<div class="toc">
+  <ol>
+    <li>1. Contexte et problématique</li>
+    <li class="lvl2">1.1 Contexte du projet &nbsp; 1.2 Problématique &nbsp; 1.3 Objectifs &nbsp; 1.4 Périmètre</li>
+    <li>2. Besoins fonctionnels</li>
+    <li class="lvl2">2.1 Acteurs &nbsp; 2.2 Fonctions attendues &nbsp; 2.3 Besoins non fonctionnels</li>
+    <li>3. Règles de gestion</li>
+    <li>4. Description des cas d'utilisation</li>
+    <li class="lvl2">4.1 Vue d'ensemble &nbsp; 4.2 Fiches détaillées</li>
+    <li>5. Modélisation UML</li>
+    <li class="lvl2">5.1 Cas d'utilisation &nbsp; 5.2 Classes &nbsp; 5.3 Séquences</li>
+    <li>6. Choix techniques</li>
+    <li class="lvl2">6.1 Architecture &nbsp; 6.2 Frontend &nbsp; 6.3 Backend &nbsp; 6.4 Données &nbsp; 6.5 Sécurité &nbsp; 6.6 Alternatives écartées</li>
+    <li>7. Captures des interfaces</li>
+    <li>8. Tests et validation</li>
+    <li>9. Bilan</li>
+    <li>Annexes : installation, API REST, arborescence</li>
+  </ol>
+</div>
+
+<!-- =================== 1. CONTEXTE =================== -->
+<h1 class="newpage">1. Contexte et problématique</h1>
+
+<h2>1.1 Contexte du projet</h2>
+<p>
+Dans une formation technique, les étudiants d'un même semestre ne maîtrisent pas tous les mêmes
+compétences : l'un est à l'aise en programmation, l'autre en anglais, un troisième en bureautique ou en
+mathématiques. Ces écarts sont rarement exploités, alors qu'ils constituent une ressource pédagogique
+immédiate et gratuite. Les dispositifs existants (groupes de discussion, affichage papier, bouche à oreille)
+ne permettent ni de savoir qui peut aider sur quoi, ni de réserver un moment précis, ni de garantir qu'un
+engagement sera honoré.
+</p>
+<p>
+Le projet <strong>SkillSwap Campus</strong> répond à ce besoin par une application web où chaque étudiant
+propose des séances sur les compétences qu'il maîtrise et en réserve auprès d'autres étudiants. L'échange
+ne repose pas sur de l'argent mais sur une <strong>banque de temps</strong> : une heure donnée vaut une heure
+reçue, matérialisée par des crédits.
+</p>
+
+<h2>1.2 Problématique</h2>
+<div class="note">
+Comment organiser entre étudiants un échange de compétences équitable, réservable et fiable, sans
+transaction monétaire, tout en garantissant qu'une séance acceptée soit réellement réalisée ou, à défaut,
+que les crédits reviennent à la bonne personne ?
+</div>
+<p>Trois difficultés structurent cette problématique :</p>
+<ul>
+  <li><strong>L'équité</strong> : un crédit doit correspondre à une heure, et aucun participant ne doit pouvoir
+      accumuler des séances sans jamais en donner.</li>
+  <li><strong>La confiance</strong> : une séance acceptée engage deux personnes ; il faut un mécanisme de
+      confirmation mutuelle et un recours en cas de désaccord.</li>
+  <li><strong>La concurrence d'accès</strong> : plusieurs étudiants peuvent viser le même créneau au même
+      instant ; le système doit garantir qu'un créneau n'a qu'un seul bénéficiaire et qu'un transfert de
+      crédits n'a lieu qu'une seule fois.</li>
+</ul>
+
+<h2>1.3 Objectifs</h2>
+<table>
+  <tr><th style="width:26%">Objectif</th><th>Résultat attendu</th></tr>
+  <tr><td>Centraliser l'offre de compétences</td><td>Un catalogue consultable, filtrable par compétence, catégorie, niveau, mode et date.</td></tr>
+  <tr><td>Permettre la réservation</td><td>Chaque offre expose des créneaux datés ; un étudiant en demande un, l'intervenant l'accepte ou le refuse.</td></tr>
+  <tr><td>Garantir l'équité des échanges</td><td>Blocage des crédits à l'acceptation, transfert après double confirmation de réalisation.</td></tr>
+  <tr><td>Traiter les désaccords</td><td>Signalement, échanges écrits, décision motivée et définitive de l'administrateur.</td></tr>
+  <tr><td>Administrer la plateforme</td><td>Gestion des comptes, des catégories, modération des offres, suivi par indicateurs.</td></tr>
+  <tr><td>Fournir un artefact logiciel complet</td><td>Code source, base de données versionnée, configuration, documentation et tests automatisés.</td></tr>
+</table>
+
+<h2>1.4 Périmètre</h2>
+<p>
+L'application couvre le cycle complet d'un échange : inscription, publication d'une offre, réservation,
+acceptation, réalisation, confirmation, évaluation et traitement des litiges, ainsi que l'administration.
+</p>
+<p><strong>Hors périmètre</strong> : paiement réel, visioconférence intégrée (un simple lien est stocké),
+messagerie instantanée générale, application mobile native, envoi d'e-mails transactionnels, et gestion de
+plusieurs établissements. Les crédits n'ont aucune valeur monétaire et ne sont ni achetables ni convertibles.
+</p>
+
+<!-- =================== 2. BESOINS =================== -->
+<h1 class="newpage">2. Besoins fonctionnels</h1>
+
+<h2>2.1 Acteurs</h2>
+<table>
+  <tr><th style="width:22%">Acteur</th><th>Description et responsabilités</th></tr>
+  <tr><td><strong>Étudiant</strong></td><td>Utilisateur authentifié de la plateforme. Il publie des offres, gère ses créneaux, réserve des séances, confirme leur réalisation, évalue ses pairs, consulte ses crédits et ouvre un signalement en cas de problème.</td></tr>
+  <tr><td><strong>Administrateur</strong></td><td>Compte de supervision. Il consulte les indicateurs, active ou désactive des comptes, gère les catégories, modère les offres, annule une séance acceptée et tranche les litiges.</td></tr>
+</table>
+<p class="small">Un étudiant est à la fois <em>intervenant</em> sur ses propres offres et <em>bénéficiaire</em> sur celles des autres : ces deux rôles ne sont pas des acteurs distincts mais deux positions dans une réservation.</p>
+
+<h2>2.2 Fonctions attendues</h2>
+<table>
+  <tr><th style="width:9%">Réf.</th><th style="width:52%">Besoin fonctionnel</th><th style="width:15%">Acteur</th><th>Priorité</th></tr>
+  <tr><td>BF01</td><td>Créer un compte avec e-mail unique et mot de passe de 8 caractères minimum</td><td>Étudiant</td><td>Indispensable</td></tr>
+  <tr><td>BF02</td><td>S'authentifier et conserver sa session</td><td>Étudiant</td><td>Indispensable</td></tr>
+  <tr><td>BF03</td><td>Renseigner son profil : filière, compétences proposées, compétences recherchées</td><td>Étudiant</td><td>Indispensable</td></tr>
+  <tr><td>BF04</td><td>Créer une offre : titre, catégorie, compétence, description, niveau, durée (1 h ou 2 h), mode</td><td>Étudiant</td><td>Indispensable</td></tr>
+  <tr><td>BF05</td><td>Ajouter, consulter et supprimer des créneaux datés avec lieu ou lien privé</td><td>Étudiant</td><td>Indispensable</td></tr>
+  <tr><td>BF06</td><td>Publier, dépublier ou archiver une offre</td><td>Étudiant</td><td>Indispensable</td></tr>
+  <tr><td>BF07</td><td>Rechercher une offre par mot-clé, catégorie, niveau, mode et date</td><td>Étudiant</td><td>Indispensable</td></tr>
+  <tr><td>BF08</td><td>Recevoir des suggestions correspondant aux compétences recherchées</td><td>Étudiant</td><td>Important</td></tr>
+  <tr><td>BF09</td><td>Demander un créneau et suivre l'état de sa demande</td><td>Étudiant</td><td>Indispensable</td></tr>
+  <tr><td>BF10</td><td>Accepter une demande ou la refuser avec un motif obligatoire</td><td>Étudiant</td><td>Indispensable</td></tr>
+  <tr><td>BF11</td><td>Consulter son planning avec le lieu ou le lien de la séance</td><td>Étudiant</td><td>Indispensable</td></tr>
+  <tr><td>BF12</td><td>Annuler une séance avant son début</td><td>Étudiant</td><td>Indispensable</td></tr>
+  <tr><td>BF13</td><td>Confirmer la réalisation d'une séance</td><td>Étudiant</td><td>Indispensable</td></tr>
+  <tr><td>BF14</td><td>Consulter son solde de crédits, ses crédits bloqués et l'historique des mouvements</td><td>Étudiant</td><td>Indispensable</td></tr>
+  <tr><td>BF15</td><td>Évaluer l'autre participant après une séance réalisée (note de 1 à 5 et commentaire)</td><td>Étudiant</td><td>Important</td></tr>
+  <tr><td>BF16</td><td>Signaler un problème et échanger des messages sur le litige</td><td>Étudiant</td><td>Indispensable</td></tr>
+  <tr><td>BF17</td><td>Recevoir des notifications sur les événements de ses réservations</td><td>Étudiant</td><td>Important</td></tr>
+  <tr><td>BF18</td><td>Consulter un tableau de bord d'indicateurs</td><td>Administrateur</td><td>Important</td></tr>
+  <tr><td>BF19</td><td>Activer ou désactiver un compte étudiant</td><td>Administrateur</td><td>Indispensable</td></tr>
+  <tr><td>BF20</td><td>Créer, renommer et supprimer des catégories de compétences</td><td>Administrateur</td><td>Important</td></tr>
+  <tr><td>BF21</td><td>Masquer ou réafficher une offre inappropriée</td><td>Administrateur</td><td>Indispensable</td></tr>
+  <tr><td>BF22</td><td>Annuler une séance acceptée en libérant les crédits</td><td>Administrateur</td><td>Important</td></tr>
+  <tr><td>BF23</td><td>Trancher un litige par une décision motivée et définitive</td><td>Administrateur</td><td>Indispensable</td></tr>
+</table>
+
+<h2>2.3 Besoins non fonctionnels</h2>
+<table>
+  <tr><th style="width:26%">Exigence</th><th>Mise en œuvre</th></tr>
+  <tr><td>Intégrité des crédits</td><td>Opérations de débit, blocage et transfert dans une même transaction ; contraintes <code>balance &gt;= 0</code> et <code>blocked &gt;= 0</code> en base.</td></tr>
+  <tr><td>Unicité des engagements</td><td>Index uniques partiels sur les réservations actives et sur les mouvements de règlement.</td></tr>
+  <tr><td>Sécurité</td><td>Mots de passe hachés avec bcrypt, jetons JWT signés, contrôle systématique des droits côté serveur.</td></tr>
+  <tr><td>Confidentialité</td><td>Lieu et lien de réunion visibles uniquement par les participants et l'administrateur ; litiges accessibles aux seules parties concernées.</td></tr>
+  <tr><td>Ergonomie</td><td>Interface responsive en français, messages d'erreur explicites, actions destructrices confirmées, boutons désactivés pendant les requêtes.</td></tr>
+  <tr><td>Maintenabilité</td><td>Séparation routes / règles métier / accès aux données ; schéma versionné par migrations ; 42 tests automatisés.</td></tr>
+  <tr><td>Portabilité</td><td>SQLite par défaut (aucune installation), PostgreSQL possible par simple changement d'URL.</td></tr>
+</table>
+
+<!-- =================== 3. RÈGLES DE GESTION =================== -->
+<h1 class="newpage">3. Règles de gestion</h1>
+<p>
+Les règles ci-dessous constituent le cœur du domaine. Elles sont numérotées, puis appliquées
+<strong>côté serveur</strong> : l'interface ne fait que les refléter, ce qui les rend valables quel que soit
+le client.
+</p>
+<table>
+  <tr><th style="width:8%">Réf.</th><th style="width:46%">Règle</th><th>Application dans le système</th></tr>
+  <tr><td>RG01</td><td>Un compte est identifié par une adresse e-mail unique. Chaque nouvel inscrit reçoit 2 crédits de bienvenue, une seule fois.</td><td>Contrainte d'unicité sur <code>users.email</code>, insertion et mouvement de bienvenue dans une même transaction.</td></tr>
+  <tr><td>RG02</td><td>Seule une offre publiée, non masquée, dont le propriétaire est actif, est réservable.</td><td>Filtres du catalogue et contrôles à la demande.</td></tr>
+  <tr><td>RG03</td><td>Un étudiant ne peut pas réserver sa propre offre ni déposer deux demandes actives sur le même créneau.</td><td>Contrôles métier et index unique partiel <code>uq_booking_dup</code>.</td></tr>
+  <tr><td>RG04</td><td>Un créneau doit être futur, ne pas chevaucher un autre créneau du même intervenant, et une offre ne peut être publiée sans créneau futur.</td><td>Validation à la création du créneau et au changement d'état.</td></tr>
+  <tr><td>RG05</td><td>Le bénéficiaire doit disposer d'un solde suffisant (1 crédit par heure) pour demander puis pour obtenir une séance.</td><td>Contrôle à la demande et à l'acceptation.</td></tr>
+  <tr><td>RG06</td><td>À l'acceptation, les crédits du bénéficiaire sont bloqués sans être transférés.</td><td>Solde disponible diminué, compteur « bloqué » augmenté, mouvement <code>blocage</code> enregistré.</td></tr>
+  <tr><td>RG07</td><td>Un créneau ne peut être attribué qu'à un seul bénéficiaire. Les autres demandes en attente sont automatiquement refusées.</td><td>Index unique <code>uq_slot_active</code> et refus en cascade dans la transaction d'acceptation.</td></tr>
+  <tr><td>RG08</td><td>Un participant ne peut pas avoir deux séances qui se chevauchent (intervenant comme bénéficiaire). Les séances consécutives restent autorisées.</td><td>Fonction <code>has_conflict</code> exécutée à l'acceptation pour les deux participants.</td></tr>
+  <tr><td>RG09</td><td>Le lieu ou le lien de réunion n'est visible qu'après acceptation, par les participants et l'administrateur.</td><td>Filtrage des champs renvoyés par l'API selon l'appelant.</td></tr>
+  <tr><td>RG10</td><td>Une séance acceptée peut être annulée avant son début ; les crédits bloqués sont alors libérés.</td><td>Annulation contrôlée par l'heure de début, mouvement <code>libération</code>.</td></tr>
+  <tr><td>RG11</td><td>La confirmation de réalisation n'est possible qu'après l'heure de fin, et une seule fois par participant.</td><td>Contrôle temporel et indicateurs <code>provider_confirmed</code> / <code>beneficiary_confirmed</code>.</td></tr>
+  <tr><td>RG12</td><td>Le transfert des crédits exige la confirmation des deux participants.</td><td>Transfert déclenché uniquement lorsque les deux indicateurs sont vrais.</td></tr>
+  <tr><td>RG13</td><td>Un litige peut être ouvert après le début d'une séance ; les crédits restent bloqués jusqu'à la décision de l'administrateur.</td><td>Statut <code>en_litige</code>, transfert bloqué tant qu'un litige est ouvert.</td></tr>
+  <tr><td>RG14</td><td>Le règlement d'une réservation est unique et définitif : un seul transfert ou une seule restitution, jamais les deux.</td><td>Index unique <code>uq_transfer_once</code>, indicateur <code>settled</code>, refus de tout second règlement.</td></tr>
+  <tr><td>RG15</td><td>Chaque participant peut évaluer l'autre une seule fois, après une séance réalisée.</td><td>Contrainte d'unicité <code>(booking_id, author_id)</code>.</td></tr>
+  <tr><td>RG16</td><td>Le solde disponible et le solde bloqué ne peuvent jamais devenir négatifs.</td><td>Contraintes <code>CHECK</code> en base et contrôles préalables.</td></tr>
+  <tr><td>RG17</td><td>Archiver ou masquer une offre annule ses demandes en attente.</td><td>Traitement en cascade lors du changement d'état ou de la modération.</td></tr>
+  <tr><td>RG18</td><td>Un compte désactivé ne peut plus se connecter ni conserver de demandes en attente.</td><td>Contrôle à l'authentification et annulation des demandes ; un administrateur ne peut être désactivé.</td></tr>
+  <tr><td>RG19</td><td>Les données sensibles (litiges, lieux) ne sont accessibles qu'aux parties concernées et à l'administrateur.</td><td>Vérification d'appartenance sur chaque route concernée, réponse 404 en cas d'accès non autorisé.</td></tr>
+</table>
+
+<!-- =================== 4. CAS D'UTILISATION =================== -->
+<h1 class="newpage">4. Description des cas d'utilisation</h1>
+
+<h2>4.1 Vue d'ensemble</h2>
+<table>
+  <tr><th style="width:9%">Réf.</th><th style="width:38%">Cas d'utilisation</th><th style="width:16%">Acteur</th><th>Règles liées</th></tr>
+  <tr><td>UC01</td><td>S'inscrire</td><td>Visiteur</td><td>RG01</td></tr>
+  <tr><td>UC02</td><td>Se connecter</td><td>Étudiant</td><td>RG01, RG18</td></tr>
+  <tr><td>UC03</td><td>Gérer son profil</td><td>Étudiant</td><td></td></tr>
+  <tr><td>UC04</td><td>Publier une offre</td><td>Étudiant</td><td>RG04, RG17</td></tr>
+  <tr><td>UC05</td><td>Gérer les créneaux</td><td>Étudiant</td><td>RG04</td></tr>
+  <tr><td>UC06</td><td>Rechercher une offre</td><td>Étudiant</td><td>RG02</td></tr>
+  <tr><td>UC07</td><td>Consulter les suggestions</td><td>Étudiant</td><td>RG02</td></tr>
+  <tr><td>UC08</td><td>Demander un créneau</td><td>Étudiant</td><td>RG03, RG05</td></tr>
+  <tr><td>UC09</td><td>Accepter une demande</td><td>Étudiant</td><td>RG05, RG06, RG07, RG08</td></tr>
+  <tr><td>UC10</td><td>Refuser une demande</td><td>Étudiant</td><td></td></tr>
+  <tr><td>UC11</td><td>Consulter son planning</td><td>Étudiant</td><td>RG09</td></tr>
+  <tr><td>UC12</td><td>Annuler une séance</td><td>Étudiant</td><td>RG10</td></tr>
+  <tr><td>UC13</td><td>Confirmer la réalisation</td><td>Étudiant</td><td>RG11, RG12</td></tr>
+  <tr><td>UC14</td><td>Consulter ses crédits</td><td>Étudiant</td><td>RG06, RG16</td></tr>
+  <tr><td>UC15</td><td>Évaluer un participant</td><td>Étudiant</td><td>RG15</td></tr>
+  <tr><td>UC16</td><td>Signaler un problème</td><td>Étudiant</td><td>RG13</td></tr>
+  <tr><td>UC17</td><td>Trancher un litige</td><td>Administrateur</td><td>RG13, RG14</td></tr>
+  <tr><td>UC18</td><td>Administrer la plateforme (comptes, catégories, modération, indicateurs)</td><td>Administrateur</td><td>RG17, RG18</td></tr>
+</table>
+
+<h2>4.2 Fiches détaillées</h2>
+
+<h3>UC04 : Publier une offre</h3>
+<table>
+  <tr><th style="width:22%">Acteur</th><td>Étudiant (en position d'intervenant)</td></tr>
+  <tr><th>Préconditions</th><td>L'étudiant est authentifié et son compte est actif.</td></tr>
+  <tr><th>Scénario nominal</th><td>
+    1. L'étudiant crée une offre en précisant titre, catégorie, compétence, description, niveau, durée et mode.<br>
+    2. Le système enregistre l'offre à l'état <em>brouillon</em>.<br>
+    3. L'étudiant ajoute un ou plusieurs créneaux futurs avec un lieu ou un lien de réunion.<br>
+    4. L'étudiant demande la publication ; le système vérifie qu'un créneau futur existe.<br>
+    5. L'offre passe à l'état <em>publiée</em> et devient visible dans le catalogue des autres étudiants.
+  </td></tr>
+  <tr><th>Variantes et exceptions</th><td>
+    A1. Aucun créneau futur : la publication est refusée avec le message « Ajoutez au moins un créneau futur avant de publier. »<br>
+    A2. Créneau dans le passé : refusé.<br>
+    A3. Créneau chevauchant un autre créneau de l'intervenant : refusé.<br>
+    A4. Lieu ou lien absent : refusé (le lien est obligatoire en distanciel).<br>
+    A5. Offre masquée par la modération : la publication est refusée.
+  </td></tr>
+  <tr><th>Postconditions</th><td>L'offre est publiée et réservable ; elle reste modifiable, sauf sa durée si une séance est déjà acceptée.</td></tr>
+</table>
+
+<h3>UC08 : Demander un créneau</h3>
+<table>
+  <tr><th style="width:22%">Acteur</th><td>Étudiant (en position de bénéficiaire)</td></tr>
+  <tr><th>Préconditions</th><td>L'offre est publiée, non masquée ; le créneau est futur et libre.</td></tr>
+  <tr><th>Scénario nominal</th><td>
+    1. L'étudiant consulte le catalogue et ouvre une offre.<br>
+    2. Il choisit un créneau disponible et confirme sa demande.<br>
+    3. Le système enregistre une demande à l'état <em>en attente</em>, sans débiter de crédits.<br>
+    4. L'intervenant est notifié.
+  </td></tr>
+  <tr><th>Variantes et exceptions</th><td>
+    A1. Offre personnelle : refusée.<br>
+    A2. Créneau déjà attribué : refusé.<br>
+    A3. Demande déjà en cours sur ce créneau : refusée.<br>
+    A4. Solde insuffisant : refusé avec le nombre de crédits requis et disponibles.<br>
+    A5. L'étudiant peut retirer sa demande tant qu'elle est en attente.
+  </td></tr>
+  <tr><th>Postconditions</th><td>Une demande en attente existe ; aucun crédit n'est encore bloqué.</td></tr>
+</table>
+
+<h3>UC09 : Accepter une demande</h3>
+<table>
+  <tr><th style="width:22%">Acteur</th><td>Étudiant (intervenant propriétaire de l'offre)</td></tr>
+  <tr><th>Préconditions</th><td>La demande est en attente ; l'intervenant en est le destinataire.</td></tr>
+  <tr><th>Scénario nominal</th><td>
+    1. L'intervenant ouvre la liste des demandes reçues.<br>
+    2. Il accepte la demande.<br>
+    3. Le système vérifie le solde du bénéficiaire, l'absence de conflit de planning pour les deux participants et la disponibilité du créneau.<br>
+    4. Les crédits du bénéficiaire sont bloqués et la réservation passe à l'état <em>acceptée</em>.<br>
+    5. Les autres demandes du même créneau sont automatiquement refusées.
+  </td></tr>
+  <tr><th>Variantes et exceptions</th><td>
+    A1. Conflit de planning de l'intervenant ou du bénéficiaire : refus.<br>
+    A2. Solde du bénéficiaire devenu insuffisant : refus.<br>
+    A3. Créneau déjà attribué entre-temps : refus.<br>
+    A4. L'intervenant peut refuser la demande, mais un motif est obligatoire.
+  </td></tr>
+  <tr><th>Postconditions</th><td>La séance figure dans le planning des deux participants avec son lieu ; les crédits sont bloqués.</td></tr>
+</table>
+
+<h3>UC13 : Confirmer la réalisation et transférer les crédits</h3>
+<table>
+  <tr><th style="width:22%">Acteur</th><td>Les deux participants</td></tr>
+  <tr><th>Préconditions</th><td>La réservation est acceptée ; l'heure de fin de la séance est passée.</td></tr>
+  <tr><th>Scénario nominal</th><td>
+    1. Après la séance, chaque participant confirme sa réalisation.<br>
+    2. À la première confirmation, l'autre participant est notifié.<br>
+    3. À la seconde confirmation, les crédits bloqués sont transférés à l'intervenant et la réservation passe à l'état <em>réalisée</em>.<br>
+    4. Chaque participant peut alors évaluer l'autre.
+  </td></tr>
+  <tr><th>Variantes et exceptions</th><td>
+    A1. Confirmation avant l'heure de fin : refusée.<br>
+    A2. Confirmation déjà effectuée par le même participant : refusée.<br>
+    A3. Annulation avant le début : les crédits sont libérés et le créneau redevient disponible.<br>
+    A4. Un litige est ouvert : le transfert est bloqué jusqu'à la décision de l'administrateur.
+  </td></tr>
+  <tr><th>Postconditions</th><td>Le transfert est unique : aucun second transfert ni restitution n'est possible pour cette réservation.</td></tr>
+</table>
+
+<h3>UC16 : Signaler un problème</h3>
+<table>
+  <tr><th style="width:22%">Acteur</th><td>Étudiant participant à une séance acceptée</td></tr>
+  <tr><th>Préconditions</th><td>La séance a commencé ; la réservation n'est pas déjà réglée.</td></tr>
+  <tr><th>Scénario nominal</th><td>
+    1. Le participant choisit un type de signalement (absence, désaccord, confirmation manquante) et le décrit.<br>
+    2. Le système ouvre un litige, enregistre le premier message et place la réservation en litige.<br>
+    3. L'autre participant et les administrateurs sont notifiés.<br>
+    4. Les deux parties échangent des messages pour exposer leurs arguments.
+  </td></tr>
+  <tr><th>Variantes et exceptions</th><td>
+    A1. Signalement avant le début : refusé, l'annulation doit être utilisée.<br>
+    A2. Litige déjà ouvert pour cette réservation : refusé.<br>
+    A3. Un tiers ne peut ni consulter le litige ni y participer.
+  </td></tr>
+  <tr><th>Postconditions</th><td>Les crédits restent bloqués ; la réservation ne peut plus être confirmée.</td></tr>
+</table>
+
+<h3>UC17 : Trancher un litige</h3>
+<table>
+  <tr><th style="width:22%">Acteur</th><td>Administrateur</td></tr>
+  <tr><th>Préconditions</th><td>Un litige est ouvert.</td></tr>
+  <tr><th>Scénario nominal</th><td>
+    1. L'administrateur consulte le dossier : offre, montant bloqué, confirmations de chaque partie, messages.<br>
+    2. Il choisit <em>transfert</em> (les crédits vont à l'intervenant) ou <em>restitution</em> (ils reviennent au bénéficiaire).<br>
+    3. Il saisit un motif obligatoire.<br>
+    4. Le système applique le règlement intégral, clôt le litige et notifie les deux parties.
+  </td></tr>
+  <tr><th>Variantes et exceptions</th><td>
+    A1. Litige déjà résolu : tout nouveau règlement est refusé.<br>
+    A2. Motif trop court : refusé.<br>
+    A3. Un appelant non administrateur reçoit un refus d'accès.
+  </td></tr>
+  <tr><th>Postconditions</th><td>La décision est définitive ; aucun second règlement n'est possible.</td></tr>
+</table>
+
+<!-- =================== 5. UML =================== -->
+<h1 class="newpage">5. Modélisation UML</h1>
+<p>
+Les diagrammes sont fournis en <strong>sources modifiables</strong> (fichiers PlantUML dans
+<code>docs/uml/src/</code>) et en <strong>exports lisibles</strong> (SVG vectoriel et PNG dans
+<code>docs/uml/exports/</code>). Une modification du modèle se fait en éditant le fichier source puis en
+régénérant l'export.
+</p>
+
+<h2>5.1 Diagramme de cas d'utilisation</h2>
+<p>
+Le diagramme présente les deux acteurs et les fonctions regroupées par domaine. Les relations
+<code>&lt;&lt;include&gt;&gt;</code> traduisent les dépendances imposées par les règles de gestion : demander
+un créneau implique le blocage des crédits, confirmer la réalisation implique leur transfert, et modérer une
+offre étend le traitement des demandes en attente.
+</p>
+<figure class="tall">
+  <img src="../uml/exports/01-cas-utilisation.png" alt="Diagramme de cas d'utilisation">
+  <figcaption>Figure 1. Diagramme de cas d'utilisation de SkillSwap Campus.</figcaption>
+</figure>
+
+<h2>5.2 Diagramme de classes</h2>
+<p>
+Le modèle comporte dix classes persistantes. Une réservation relie un créneau, une offre, un intervenant et un
+bénéficiaire ; elle porte l'état du cycle de vie (attente, acceptée, réalisée, litige) et les deux
+confirmations. Les mouvements de crédits conservent l'historique comptable, tandis que litiges et messages
+gardent la trace des désaccords. Les notes de modèle rappellent les deux contraintes d'unicité qui protègent
+les règles RG07 et RG14.
+</p>
+<figure>
+  <img src="../uml/exports/02-classes.png" alt="Diagramme de classes">
+  <figcaption>Figure 2. Diagramme de classes (attributs, multiplicités et contraintes).</figcaption>
+</figure>
+
+<h2>5.3 Diagrammes de séquence</h2>
+<p>
+Les diagrammes de séquence couvrent les scénarios structurants et leurs variantes. Les blocs
+<code>alt</code> correspondent aux exceptions réellement implémentées et testées, avec les messages
+d'erreur renvoyés par l'API.
+</p>
+
+<figure>
+  <img src="../uml/exports/03-sequence-inscription-connexion.png" alt="Séquence inscription et connexion">
+  <figcaption>Figure 3. Inscription (avec les 2 crédits de bienvenue) et connexion (RG01, RG18).</figcaption>
+</figure>
+
+<figure>
+  <img src="../uml/exports/04-sequence-publier-offre.png" alt="Séquence publier une offre">
+  <figcaption>Figure 4. Publication d'une offre et de ses créneaux, avec les variantes de validation (RG04, RG09, RG17).</figcaption>
+</figure>
+
+<figure>
+  <img src="../uml/exports/05-sequence-reserver-seance.png" alt="Séquence demander et accepter">
+  <figcaption>Figure 5. Demande d'un créneau puis acceptation par l'intervenant (RG03, RG05 à RG08).</figcaption>
+</figure>
+
+<figure>
+  <img src="../uml/exports/06-sequence-realisation-transfert.png" alt="Séquence réalisation et transfert">
+  <figcaption>Figure 6. Annulation avant le début, puis double confirmation et transfert unique des crédits (RG10 à RG14).</figcaption>
+</figure>
+
+<figure>
+  <img src="../uml/exports/07-sequence-litige.png" alt="Séquence litige">
+  <figcaption>Figure 7. Ouverture d'un litige, échanges entre les parties et décision motivée de l'administrateur (RG13, RG14, RG19).</figcaption>
+</figure>
+
+<figure>
+  <img src="../uml/exports/08-sequence-moderation.png" alt="Séquence modération">
+  <figcaption>Figure 8. Modération d'une offre et désactivation d'un compte (RG17, RG18).</figcaption>
+</figure>
+
+<!-- =================== 6. CHOIX TECHNIQUES =================== -->
+<h1 class="newpage">6. Choix techniques</h1>
+
+<h2>6.1 Architecture</h2>
+<p>
+L'application suit une architecture <strong>trois tiers</strong>. Le frontend React est une application
+mono-page servie par Vite ; il dialogue avec une API REST FastAPI qui concentre toutes les règles de gestion ;
+la persistance est assurée par SQLAlchemy sur une base relationnelle. Cette séparation permet de remplacer
+l'interface ou le stockage sans réécrire la logique métier, et rend celle-ci testable indépendamment.
+</p>
+<pre>Navigateur  ──HTTP/JSON──►  Frontend React (Vite, port 5173)
+                                   │  /api/...  (proxy en développement)
+                                   ▼
+                            API REST FastAPI (port 4000)
+                                   │  SQLAlchemy (ORM, transactions)
+                                   ▼
+                     Base relationnelle : SQLite ou PostgreSQL
+                                   ▲
+                        Migrations versionnées par Alembic</pre>
+
+<h2>6.2 Frontend : React et Vite</h2>
+<table>
+  <tr><th style="width:26%">Choix</th><th>Justification</th></tr>
+  <tr><td>React 18</td><td>Bibliothèque la plus documentée pour construire une interface à états multiples (catalogue, formulaires, tableaux de bord) ; composants réutilisables pour les badges d'état et les modales.</td></tr>
+  <tr><td>Vite</td><td>Démarrage quasi instantané, rechargement à chaud, et <strong>proxy de développement</strong> qui évite toute configuration CORS côté navigateur.</td></tr>
+  <tr><td>React Router</td><td>Routes protégées par rôle : l'espace administrateur n'est accessible qu'aux comptes de rôle <code>admin</code>.</td></tr>
+  <tr><td>CSS simple</td><td>Aucune dépendance d'interface lourde : feuille de styles unique, lisible et facile à modifier pour un projet pédagogique.</td></tr>
+</table>
+
+<h2>6.3 Backend : Python, FastAPI et SQLAlchemy</h2>
+<table>
+  <tr><th style="width:26%">Choix</th><th>Justification</th></tr>
+  <tr><td>FastAPI</td><td>Routes déclaratives, validation des entrées par Pydantic, documentation OpenAPI générée automatiquement sur <code>/docs</code>.</td></tr>
+  <tr><td>SQLAlchemy 2</td><td>ORM mûr : relations explicites, transactions, contraintes et index déclarés dans les modèles, indépendance vis-à-vis du SGBD.</td></tr>
+  <tr><td>Séparation des couches</td><td><code>main.py</code> (routes), <code>services.py</code> (règles RG01 à RG19), <code>models.py</code> (données), <code>serializers.py</code> (format JSON).</td></tr>
+  <tr><td>Transactions</td><td>Chaque opération sensible (acceptation, confirmation, règlement) est atomique : un échec n'enregistre aucun mouvement partiel.</td></tr>
+</table>
+
+<h2>6.4 Données : SQLite, Alembic et contraintes</h2>
+<p>
+SQLite a été retenu par défaut pour supprimer toute étape d'installation : la base est un fichier créé
+automatiquement. Le schéma n'est jamais construit à la main, il résulte d'une <strong>migration Alembic</strong>
+versionnée, ce qui garantit que la base d'un correcteur est identique à celle du développeur. Le passage à
+PostgreSQL ne demande qu'un changement d'URL de connexion.
+</p>
+<p>Trois contraintes d'unicité <em>partielles</em> portent les règles les plus critiques :</p>
+<table>
+  <tr><th style="width:30%">Index</th><th style="width:44%">Condition</th><th>Règle protégée</th></tr>
+  <tr><td><code>uq_slot_active</code></td><td>une réservation active par créneau</td><td>RG07</td></tr>
+  <tr><td><code>uq_booking_dup</code></td><td>une demande active par créneau et bénéficiaire</td><td>RG03</td></tr>
+  <tr><td><code>uq_transfer_once</code></td><td>un seul règlement par réservation</td><td>RG14</td></tr>
+</table>
+<p>
+Ces index agissent au niveau du SGBD : même si deux requêtes arrivent exactement au même instant, la seconde
+échoue et l'utilisateur reçoit un message clair, sans double attribution ni double transfert.
+</p>
+
+<h2>6.5 Sécurité</h2>
+<ul>
+  <li><strong>Mots de passe</strong> : hachage bcrypt avec sel, jamais stockés en clair.</li>
+  <li><strong>Sessions</strong> : jetons JWT signés (HS256), valables 7 jours, transmis dans l'en-tête <code>Authorization</code>.</li>
+  <li><strong>Autorisations</strong> : chaque route vérifie l'identité et le rôle ; les accès non autorisés renvoient 401, 403 ou 404 selon le cas.</li>
+  <li><strong>Confidentialité</strong> : le lieu ou le lien d'une séance n'est envoyé qu'aux participants après acceptation ; un litige n'est visible que par ses parties et l'administrateur.</li>
+  <li><strong>Robustesse</strong> : les actions destructrices demandent une confirmation, et les boutons sont désactivés pendant une requête pour éviter les doubles envois.</li>
+</ul>
+
+<h2>6.6 Alternatives écartées</h2>
+<table>
+  <tr><th style="width:30%">Alternative</th><th>Motif du rejet</th></tr>
+  <tr><td>Stockage des crédits dans le navigateur</td><td>Aucune garantie : un utilisateur pourrait modifier son solde. Les crédits sont donc tenus exclusivement par le serveur.</td></tr>
+  <tr><td>Calcul du solde à partir de l'historique uniquement</td><td>Coût de lecture croissant et risque d'incohérence ; le solde est matérialisé et l'historique sert de piste d'audit.</td></tr>
+  <tr><td>Création du schéma par <code>create_all</code></td><td>Aucune traçabilité des évolutions ; Alembic fournit un historique rejouable et vérifiable.</td></tr>
+  <tr><td>Paiement en ligne</td><td>Hors sujet pédagogique et contraire au principe de banque de temps.</td></tr>
+  <tr><td>Notification temps réel (WebSocket)</td><td>Complexité supplémentaire sans bénéfice pour un usage de campus ; un rafraîchissement périodique suffit.</td></tr>
+</table>
+
+<!-- =================== 7. CAPTURES =================== -->
+<h1 class="newpage">7. Captures des interfaces</h1>
+<p>
+Les captures suivantes ont été prises sur l'application en fonctionnement, avec un jeu de données
+représentatif : quatre comptes étudiants, sept offres publiées, une séance acceptée, une séance réalisée et évaluée,
+une demande en attente et un litige ouvert.
+</p>
+
+<figure><img src="../captures/01-connexion.png" alt="Connexion"><figcaption>Figure 9. Page de connexion.</figcaption></figure>
+<figure><img src="../captures/02-inscription.png" alt="Inscription"><figcaption>Figure 10. Inscription : les 2 crédits de bienvenue sont annoncés.</figcaption></figure>
+<figure><img src="../captures/03-catalogue.png" alt="Catalogue"><figcaption>Figure 11. Catalogue des séances : filtres par compétence, catégorie, niveau, mode et date.</figcaption></figure>
+<figure><img src="../captures/04-offre-detail.png" alt="Détail d'une offre"><figcaption>Figure 12. Détail d'une offre : créneaux disponibles et demande de réservation.</figcaption></figure>
+<figure><img src="../captures/05-mes-offres.png" alt="Mes offres"><figcaption>Figure 13. Mes offres : états brouillon, publiée, archivée.</figcaption></figure>
+<figure><img src="../captures/06-edition-offre.png" alt="Édition d'une offre"><figcaption>Figure 14. Édition d'une offre et gestion de ses créneaux.</figcaption></figure>
+<figure><img src="../captures/07-demandes.png" alt="Demandes"><figcaption>Figure 15. Demandes reçues et envoyées, avec les actions autorisées selon l'état.</figcaption></figure>
+<figure><img src="../captures/08-planning.png" alt="Planning"><figcaption>Figure 16. Planning personnel : séances acceptées et lieu ou lien privé.</figcaption></figure>
+<figure><img src="../captures/09-credits.png" alt="Crédits"><figcaption>Figure 17. Portefeuille : solde disponible, crédits bloqués et historique des mouvements.</figcaption></figure>
+<figure><img src="../captures/10-profil.png" alt="Profil"><figcaption>Figure 18. Profil : filière, compétences proposées et compétences recherchées (utilisées pour les suggestions).</figcaption></figure>
+<figure><img src="../captures/11-litige.png" alt="Litige"><figcaption>Figure 19. Dossier de litige : arguments des deux parties et montant bloqué.</figcaption></figure>
+<figure><img src="../captures/12-admin-dashboard.png" alt="Tableau de bord"><figcaption>Figure 20. Tableau de bord administrateur.</figcaption></figure>
+<figure><img src="../captures/13-admin-comptes.png" alt="Comptes"><figcaption>Figure 21. Gestion des comptes et des soldes.</figcaption></figure>
+<figure><img src="../captures/14-admin-litiges.png" alt="Litiges admin"><figcaption>Figure 22. Liste des litiges à traiter.</figcaption></figure>
+<figure><img src="../captures/15-admin-litige-detail.png" alt="Décision de litige"><figcaption>Figure 23. Décision de l'administrateur : transfert ou restitution, avec motif obligatoire.</figcaption></figure>
+<figure><img src="../captures/16-admin-categories.png" alt="Catégories"><figcaption>Figure 24. Gestion des catégories de compétences.</figcaption></figure>
+<figure><img src="../captures/17-admin-moderation.png" alt="Modération"><figcaption>Figure 25. Modération des offres.</figcaption></figure>
+<figure><img src="../captures/18-notifications.png" alt="Notifications"><figcaption>Figure 26. Notifications de l'espace personnel.</figcaption></figure>
+
+<!-- =================== 8. TESTS =================== -->
+<h1 class="newpage">8. Tests et validation</h1>
+<p>
+Les règles de gestion sont vérifiées par un script automatisé (<code>python -m app.test_rules</code>) qui
+travaille sur une base temporaire, applique la migration, puis exécute des scénarios complets en appelant
+l'API réelle. Le rapport final affiche <strong>42 vérifications réussies</strong>.
+</p>
+<table>
+  <tr><th style="width:38%">Scénario testé</th><th style="width:16%">Règles</th><th>Résultat attendu</th></tr>
+  <tr><td>Inscription et crédits de bienvenue</td><td>RG01</td><td>2 crédits, e-mail unique insensible à la casse</td></tr>
+  <tr><td>Connexion avec un mot de passe erroné</td><td>RG01</td><td>Refus 401</td></tr>
+  <tr><td>Publication sans créneau</td><td>RG04</td><td>Refus avec message explicite</td></tr>
+  <tr><td>Réservation de sa propre offre</td><td>RG03</td><td>Refus</td></tr>
+  <tr><td>Double demande sur le même créneau</td><td>RG03</td><td>Refus</td></tr>
+  <tr><td>Suggestions selon le profil</td><td>RG02</td><td>Offre pertinente retournée, offres personnelles exclues</td></tr>
+  <tr><td>Acceptation par un non-intervenant</td><td>RG09</td><td>Refus 403</td></tr>
+  <tr><td>Acceptation valide</td><td>RG06, RG07</td><td>Crédits bloqués, autres demandes refusées</td></tr>
+  <tr><td>Double acceptation</td><td>RG07</td><td>Refus</td></tr>
+  <tr><td>Annulation avant le début</td><td>RG10</td><td>Crédits libérés, créneau de nouveau réservable</td></tr>
+  <tr><td>Annulation après le début</td><td>RG10</td><td>Refus, renvoi vers le signalement</td></tr>
+  <tr><td>Confirmation avant l'heure de fin</td><td>RG11</td><td>Refus</td></tr>
+  <tr><td>Double confirmation et transfert</td><td>RG12</td><td>Transfert unique, soldes cohérents</td></tr>
+  <tr><td>Nouvelle confirmation après transfert</td><td>RG14</td><td>Refus, aucun second transfert</td></tr>
+  <tr><td>Évaluation et doublon d'évaluation</td><td>RG15</td><td>Note enregistrée, second avis refusé</td></tr>
+  <tr><td>Litige, accès d'un tiers</td><td>RG19</td><td>Refus 404 pour un non-participant</td></tr>
+  <tr><td>Confirmation pendant un litige</td><td>RG13</td><td>Transfert bloqué</td></tr>
+  <tr><td>Décision de l'administrateur</td><td>RG13, RG14</td><td>Restitution intégrale, second règlement refusé</td></tr>
+  <tr><td>Chevauchement de séances</td><td>RG08</td><td>Seconde acceptation refusée</td></tr>
+  <tr><td>Solde insuffisant</td><td>RG05</td><td>Refus</td></tr>
+  <tr><td>Archivage d'une offre</td><td>RG17</td><td>Demandes en attente annulées</td></tr>
+  <tr><td>Désactivation d'un compte</td><td>RG18</td><td>Connexion refusée</td></tr>
+  <tr><td>Accès aux indicateurs par un étudiant</td><td>RG19</td><td>Refus 403</td></tr>
+</table>
+
+<!-- =================== 9. BILAN =================== -->
+<h1 class="newpage">9. Bilan</h1>
+
+<h2>9.1 Ce qui a été réalisé</h2>
+<p>
+L'application livrée couvre l'intégralité du périmètre fonctionnel décrit au chapitre 2 : comptes et profils,
+offres et créneaux, catalogue et suggestions, réservations et planning, portefeuille de crédits, évaluations,
+litiges et administration. Les dix-neuf règles de gestion sont appliquées côté serveur et protégées par des
+contraintes de base de données. Le dépôt contient le code source des deux applications, la migration qui
+construit la base, la configuration, la documentation d'installation et les tests.
+</p>
+
+<h2>9.2 Difficultés rencontrées</h2>
+<table>
+  <tr><th style="width:30%">Difficulté</th><th>Solution retenue</th></tr>
+  <tr><td>Garantir l'unicité d'un créneau en cas d'accès simultané</td><td>Déplacement de la garantie dans le SGBD : index unique partiel plutôt que simple vérification applicative.</td></tr>
+  <tr><td>Éviter un double transfert de crédits</td><td>Indicateur <code>settled</code> et index unique sur les mouvements de règlement, complétés par le refus de tout second règlement.</td></tr>
+  <tr><td>Ordonner annulation, confirmation et litige</td><td>Machine à états explicite sur la réservation, chaque transition vérifiant l'état courant et l'heure de la séance.</td></tr>
+  <tr><td>Rendre le projet immédiatement exécutable</td><td>SQLite par défaut et migration automatique du schéma, sans serveur de base à installer.</td></tr>
+</table>
+
+<h2>9.3 Limites</h2>
+<ul>
+  <li>Les notifications sont rafraîchies périodiquement et non en temps réel.</li>
+  <li>Aucun e-mail n'est envoyé : l'adresse sert uniquement d'identifiant.</li>
+  <li>L'évaluation n'influence pas encore l'ordre des suggestions.</li>
+  <li>Les créneaux récurrents doivent être saisis un par un.</li>
+</ul>
+
+<h2>9.4 Perspectives</h2>
+<ul>
+  <li>Notifications en temps réel et rappels automatiques avant une séance.</li>
+  <li>Créneaux récurrents et synchronisation avec un agenda externe.</li>
+  <li>Classement des suggestions tenant compte des notes et de l'historique d'échange.</li>
+  <li>Export des échanges d'un étudiant au format PDF pour un portfolio de compétences.</li>
+  <li>Déploiement en ligne avec PostgreSQL et sauvegardes automatiques.</li>
+</ul>
+
+<h2>9.5 Conclusion</h2>
+<p>
+SkillSwap Campus transforme un échange informel entre étudiants en un processus structuré, traçable et
+équitable. Le projet a permis de mettre en pratique la modélisation UML en amont, puis de la traduire en une
+implémentation où chaque règle de gestion correspond à un contrôle identifié, testé et documenté. La
+séparation entre interface, logique métier et données rend l'ensemble maintenable et extensible.
+</p>
+
+<!-- =================== ANNEXES =================== -->
+<h1 class="newpage">Annexes</h1>
+
+<h2>Annexe A. Installation et exécution</h2>
+<pre># 1. Backend (terminal 1)
+cd backend
+python -m venv .venv
+.venv\Scripts\Activate.ps1        # macOS / Linux : source .venv/bin/activate
+pip install -r requirements.txt
+python -m alembic upgrade head    # crée la base
+python -m app.seed                # données de démonstration (facultatif)
+python -m uvicorn app.main:app --reload --port 4000
+
+# 2. Frontend (terminal 2)
+cd frontend
+npm install
+npm run dev                       # http://localhost:5173</pre>
+<p class="small">
+Comptes : administrateur <code>admin@skillswap.ma</code> / <code>Admin123!</code> ; étudiants
+<code>sara@campus.ma</code> et <code>amine@campus.ma</code> / <code>password123</code> (après le seed).
+Documentation interactive de l'API : <code>http://localhost:4000/docs</code>.
+</p>
+
+<h2>Annexe B. Principales routes de l'API</h2>
+<table>
+  <tr><th style="width:14%">Méthode</th><th style="width:40%">Route</th><th>Rôle</th></tr>
+  <tr><td>POST</td><td><code>/api/auth/register</code>, <code>/api/auth/login</code></td><td>inscription, connexion</td></tr>
+  <tr><td>GET / PUT</td><td><code>/api/me</code></td><td>profil courant</td></tr>
+  <tr><td>GET</td><td><code>/api/offers</code> (filtres et <code>suggestions=1</code>)</td><td>catalogue</td></tr>
+  <tr><td>POST</td><td><code>/api/offers</code>, <code>/api/offers/{id}/slots</code>, <code>/api/offers/{id}/status</code></td><td>offres et créneaux</td></tr>
+  <tr><td>POST</td><td><code>/api/bookings</code></td><td>demande de créneau</td></tr>
+  <tr><td>POST</td><td><code>/api/bookings/{id}/accept|refuse|withdraw|cancel|confirm|review|dispute</code></td><td>cycle de vie d'une réservation</td></tr>
+  <tr><td>GET</td><td><code>/api/wallet</code>, <code>/api/planning</code>, <code>/api/notifications</code></td><td>suivi personnel</td></tr>
+  <tr><td>GET / POST</td><td><code>/api/disputes</code>, <code>/api/disputes/{id}/messages</code></td><td>litiges</td></tr>
+  <tr><td>GET / POST</td><td><code>/api/admin/stats|users|offers|bookings</code>, <code>/api/admin/disputes/{id}/resolve</code></td><td>administration</td></tr>
+</table>
+
+<h2>Annexe C. Arborescence du dépôt</h2>
+<pre>skillswap-campus-app/
+├── backend/                  API Python (FastAPI, SQLAlchemy, Alembic)
+│   ├── alembic/versions/0001_schema_initial.py
+│   └── app/                  config, db, models, schemas, services, main, seed, tests
+├── frontend/                 Interface React (Vite)
+│   └── src/pages/            catalogue, offres, demandes, crédits, litiges, admin
+└── docs/
+    ├── rapport/              rapport.html et rapport.pdf
+    ├── uml/src/              sources PlantUML modifiables (.puml)
+    ├── uml/exports/          exports SVG et PNG des diagrammes
+    ├── captures/             captures d'écran de l'application
+    └── bdd/schema.sql        schéma de la base de données</pre>
+
+</body>
+</html>

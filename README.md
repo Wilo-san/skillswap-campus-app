@@ -18,6 +18,23 @@ le backend doit être démarré **avant** d'ouvrir l'interface.
 
 ---
 
+## Livrables du projet
+
+| Livrable | Emplacement |
+|---|---|
+| **Rapport PDF** (contexte, besoins, règles de gestion, cas d'utilisation, UML, choix techniques, captures, bilan) | [`docs/rapport/rapport.pdf`](docs/rapport/rapport.pdf) |
+| Source du rapport (HTML, modifiable puis réexportable en PDF) | [`docs/rapport/rapport.html`](docs/rapport/rapport.html) |
+| **Modélisation UML** : sources PlantUML modifiables | [`docs/uml/src/`](docs/uml/src) |
+| **Modélisation UML** : exports SVG et PNG | [`docs/uml/exports/`](docs/uml/exports) |
+| Captures des interfaces | [`docs/captures/`](docs/captures) |
+| Schéma de la base de données (SQL) | [`docs/bdd/schema.sql`](docs/bdd/schema.sql) |
+| **Application complète** : code, configuration, dépendances, migrations, tests | `backend/`, `frontend/` |
+
+Le rapport contient 26 figures : 8 diagrammes UML et 18 captures d'écran prises sur l'application en
+fonctionnement. Les diagrammes sont modifiables : voir [`docs/uml/README.md`](docs/uml/README.md).
+
+---
+
 ## Sommaire
 
 1. [Ce que fait l'application](#ce-que-fait-lapplication)

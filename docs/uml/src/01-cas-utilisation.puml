@@ -1,0 +1,90 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "DejaVu Sans"
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam ArrowColor #4F46E5
+skinparam ArrowFontColor #333333
+skinparam ArrowFontSize 11
+skinparam packageStyle rectangle
+skinparam usecase {
+  BackgroundColor #EEF0FF
+  BorderColor #4F46E5
+  FontColor #1C2333
+  FontSize 11
+}
+left to right direction
+
+actor "Étudiant" as E
+actor "Administrateur" as A
+
+rectangle "SkillSwap Campus" {
+  package "Compte" as P1 {
+    usecase "S'inscrire" as UC01
+    usecase "Se connecter" as UC02
+    usecase "Gérer son profil\n(compétences recherchées)" as UC03
+  }
+  package "Offres" as P2 {
+    usecase "Publier une offre" as UC04
+    usecase "Gérer les créneaux" as UC05
+    usecase "Rechercher une offre" as UC06
+    usecase "Consulter les suggestions" as UC07
+  }
+  package "Réservation" as P3 {
+    usecase "Demander un créneau" as UC08
+    usecase "Accepter une demande" as UC09
+    usecase "Refuser une demande" as UC10
+    usecase "Consulter son planning" as UC11
+    usecase "Confirmer la réalisation" as UC12
+  }
+  package "Crédits et évaluation" as P4 {
+    usecase "Consulter ses crédits" as UC13
+    usecase "Bloquer les crédits" as UC14
+    usecase "Transférer les crédits" as UC15
+    usecase "Évaluer un participant" as UC16
+  }
+  package "Litiges" as P5 {
+    usecase "Signaler un problème" as UC17
+    usecase "Échanger sur le litige" as UC18
+    usecase "Trancher un litige" as UC19
+  }
+  package "Administration" as P6 {
+    usecase "Consulter le tableau de bord" as UC20
+    usecase "Gérer les comptes" as UC21
+    usecase "Gérer les catégories" as UC22
+    usecase "Modérer les offres" as UC23
+    usecase "Annuler une séance" as UC24
+  }
+}
+
+E --> UC01
+E --> UC02
+E --> UC03
+E --> UC04
+E --> UC05
+E --> UC06
+E --> UC07
+E --> UC08
+E --> UC09
+E --> UC10
+E --> UC11
+E --> UC12
+E --> UC13
+E --> UC16
+E --> UC17
+E --> UC18
+
+A --> UC19
+A --> UC20
+A --> UC21
+A --> UC22
+A --> UC23
+A --> UC24
+
+UC04 ..> UC05 : <<include>>
+UC08 ..> UC14 : <<include>>
+UC12 ..> UC15 : <<include>>
+UC19 ..> UC15 : <<include>>
+UC19 ..> UC14 : <<include>>
+UC23 ..> UC08 : <<extend>>
+@enduml

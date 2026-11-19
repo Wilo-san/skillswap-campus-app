@@ -1,0 +1,135 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "DejaVu Sans"
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam ArrowColor #4F46E5
+skinparam ArrowFontColor #333333
+skinparam ArrowFontSize 11
+skinparam class {
+  BackgroundColor #FFFFFF
+  BorderColor #4F46E5
+  ArrowColor #4F46E5
+  FontSize 11
+}
+hide empty methods
+
+class User {
+  - id : int
+  - email : string <<unique>>
+  - password_hash : string
+  - first_name : string
+  - last_name : string
+  - field : string
+  - offered_skills : text
+  - wanted_skills : text
+  - role : {student, admin}
+  - active : boolean
+  - balance : int >= 0
+  - blocked : int >= 0
+  - created_at : datetime
+  + rating() : {avg, n}
+}
+
+class Category {
+  - id : int
+  - name : string <<unique>>
+}
+
+class Offer {
+  - id : int
+  - title : string
+  - skill : string
+  - description : text
+  - level : {Débutant, Intermédiaire, Avancé}
+  - duration : {1, 2}
+  - mode : {Présentiel, À distance}
+  - status : {brouillon, publiée, archivée}
+  - hidden : boolean
+  - created_at : datetime
+  + is_visible() : boolean
+}
+
+class Slot {
+  - id : int
+  - start_at : datetime
+  - end_at : datetime
+  - location : string <<privé>>
+  + is_free() : boolean
+}
+
+class Booking {
+  - id : int
+  - cost : int
+  - status : {en_attente, refusée, acceptée, annulée, réalisée, en_litige}
+  - reason : string
+  - provider_confirmed : boolean
+  - beneficiary_confirmed : boolean
+  - settled : boolean
+  - created_at : datetime
+  + accept()
+  + refuse(motif)
+  + cancel()
+  + confirm()
+}
+
+class CreditMovement {
+  - id : int
+  - type : {bienvenue, blocage, libération, transfert_sortant, transfert_entrant, restitution}
+  - amount : int
+  - note : string
+  - created_at : datetime
+}
+
+class Review {
+  - id : int
+  - rating : int 1..5
+  - comment : text
+  - created_at : datetime
+}
+
+class Dispute {
+  - id : int
+  - kind : {absence, désaccord, confirmation_manquante}
+  - description : text
+  - status : {ouvert, résolu}
+  - decision : {transfert, restitution}
+  - decision_reason : text
+  - created_at : datetime
+  - resolved_at : datetime
+}
+
+class DisputeMessage {
+  - id : int
+  - message : text
+  - created_at : datetime
+}
+
+class Notification {
+  - id : int
+  - message : text
+  - read : boolean
+  - created_at : datetime
+}
+
+User "1" -- "0..*" Offer : propose >
+User "1" -- "0..*" Booking : intervient >
+User "1" -- "0..*" Booking : bénéficie >
+Category "1" -- "0..*" Offer : classe >
+Offer "1" *-- "0..*" Slot : contient >
+Slot "1" -- "0..1" Booking : est réservé par >
+Offer "1" -- "0..*" Booking : concerne >
+Booking "1" -- "0..*" CreditMovement : génère >
+Booking "1" -- "0..2" Review : donne lieu à >
+Booking "1" -- "0..1" Dispute : peut ouvrir >
+Dispute "1" *-- "1..*" DisputeMessage : contient >
+User "1" -- "0..*" Notification : reçoit >
+
+note right of Booking
+  Index unique partiel : un seul
+  statut acceptée/en_litige/réalisée
+  par créneau (RG07).
+  Un règlement unique par
+  réservation (RG14).
+end note
+@enduml

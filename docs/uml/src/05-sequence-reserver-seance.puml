@@ -1,0 +1,57 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "DejaVu Sans"
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam ArrowColor #4F46E5
+skinparam ArrowFontColor #333333
+skinparam ArrowFontSize 11
+title Demander un créneau et accepter la demande (RG03, RG05, RG06, RG07, RG08)
+autonumber
+
+actor "Bénéficiaire" as B
+actor "Intervenant" as I
+participant "API FastAPI" as API
+database "SQLite" as DB
+
+B -> API : POST /api/bookings {slot_id}
+API -> DB : SELECT slot, offer, users
+API -> API : contrôles d'éligibilité
+alt propre offre
+  API --> B : 400 "Vous ne pouvez pas réserver votre propre offre."
+else offre non publiée ou masquée
+  API --> B : 400 "Cette offre n'est pas disponible."
+else créneau déjà attribué
+  API --> B : 400 "Ce créneau est déjà attribué."
+else demande déjà en cours
+  API --> B : 400 "Vous avez déjà une demande en cours pour ce créneau."
+else solde insuffisant
+  API --> B : 400 "Solde insuffisant : 2 crédit(s) requis, 1 disponible(s)."
+else valide
+  API -> DB : INSERT bookings (status = en_attente, cost = durée)
+  API -> DB : INSERT notifications (intervenant)
+  API --> B : 201 {id}
+end
+
+I -> API : POST /api/bookings/{id}/accept
+API -> DB : SELECT booking, slot, offer, bénéficiaire
+alt conflit de planning
+  API --> I : 400 "Conflit de planning : vous avez déjà une séance sur cet horaire."
+else solde du bénéficiaire insuffisant
+  API --> I : 400 "Solde insuffisant du bénéficiaire pour accepter cette demande."
+else acceptation possible
+  API -> DB : UPDATE users SET balance -= cost, blocked += cost
+  API -> DB : INSERT credit_movements (blocage)
+  API -> DB : UPDATE bookings SET status = 'acceptée'
+  API -> DB : UPDATE autres demandes du créneau -> 'refusée'
+  API -> DB : INSERT notifications (bénéficiaire + demandes refusées)
+  API --> I : 200 {ok: true}
+end
+
+note over API
+  RG07 : un index unique partiel garantit qu'un créneau
+  ne peut avoir qu'une seule réservation active, même
+  en cas de clics simultanés.
+  RG08 : les séances consécutives restent autorisées.
+end note
+@enduml

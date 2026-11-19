@@ -1,0 +1,60 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "DejaVu Sans"
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam ArrowColor #4F46E5
+skinparam ArrowFontColor #333333
+skinparam ArrowFontSize 11
+title Signaler un problème et décision de l'administrateur (RG13, RG14, RG19)
+autonumber
+
+actor "Participant" as P
+actor "Administrateur" as A
+participant "API FastAPI" as API
+database "SQLite" as DB
+
+P -> API : POST /api/bookings/{id}/dispute {kind, description}
+API -> DB : SELECT booking, slot
+alt avant le début de la séance
+  API --> P : 400 "Avant le début, utilisez l'annulation."
+else réservation déjà réglée
+  API --> P : 400 "Cette réservation est déjà réglée définitivement."
+else litige déjà ouvert
+  API --> P : 400 "Un litige est déjà ouvert pour cette réservation."
+else valide
+  API -> DB : INSERT disputes (status = ouvert)
+  API -> DB : INSERT dispute_messages (description)
+  API -> DB : UPDATE bookings SET status = 'en_litige'
+  API -> DB : INSERT notifications (autre participant + administrateurs)
+  API --> P : 201 {id}
+end
+
+P -> API : POST /api/disputes/{id}/messages
+API -> API : vérifie que l'appelant est participant ou admin (RG19)
+API -> DB : INSERT dispute_messages
+API --> P : 200 {ok: true}
+
+A -> API : GET /api/disputes/{id}
+API --> A : dossier complet (confirmations, messages, montant bloqué)
+
+A -> API : POST /api/admin/disputes/{id}/resolve {decision, reason}
+API -> DB : SELECT dispute
+alt litige déjà résolu
+  API --> A : 400 "Ce litige est déjà réglé."
+else motif trop court
+  API --> A : 400 "La décision doit être motivée."
+else decision = transfert
+  API -> DB : UPDATE users (blocked -= cost, balance += cost)
+  API -> DB : INSERT credit_movements (transfert_sortant / transfert_entrant)
+  API -> DB : UPDATE bookings SET status = 'réalisée', settled = true
+  API -> DB : UPDATE disputes SET status = 'résolu'
+  API --> A : 200 {ok: true}
+else decision = restitution
+  API -> DB : UPDATE users (blocked -= cost, balance += cost)
+  API -> DB : INSERT credit_movements (restitution)
+  API -> DB : UPDATE bookings SET status = 'annulée', settled = true
+  API -> DB : UPDATE disputes SET status = 'résolu'
+  API --> A : 200 {ok: true}
+end
+@enduml
